@@ -58,6 +58,7 @@ const navigation: NavItem[] = [
         name: "Display Management", // kelola tampilan (English)
         icon: Cog6ToothIcon,
         children: [
+            { name: "Hero Section", href: "/beranda/display/hero" },
             { name: "Homepage Layout", href: "/display/homepage" },
             { name: "Landing Sections", href: "/display/sections" },
             { name: "Theme & Branding", href: "/display/theme" },
