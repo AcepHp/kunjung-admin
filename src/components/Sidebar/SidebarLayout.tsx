@@ -25,6 +25,7 @@ import {
 import { ChevronDownIcon } from "@heroicons/react/20/solid";
 import Image from "next/image";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 type NavChild = {
     name: string;
@@ -59,7 +60,8 @@ const navigation: NavItem[] = [
         icon: Cog6ToothIcon,
         children: [
             { name: "Hero Section", href: "/beranda/display/hero" },
-            { name: "Homepage Layout", href: "/display/homepage" },
+            { name: "Brand Story", href: "/beranda/display/brand-story" },
+            { name: "Brand Statement", href: "/beranda/display/brand-statement" },
             { name: "Landing Sections", href: "/display/sections" },
             { name: "Theme & Branding", href: "/display/theme" },
         ],
@@ -81,6 +83,12 @@ function classNames(...classes: Array<string | boolean | null | undefined>) {
     return classes.filter(Boolean).join(" ");
 }
 
+const isActivePath = (pathname: string, href?: string) => {
+    if (!href) return false;
+    return pathname === href || pathname.startsWith(href + "/");
+};
+
+
 export default function SidebarLayout({
     children,
 }: {
@@ -88,6 +96,8 @@ export default function SidebarLayout({
 }) {
     const [sidebarOpen, setSidebarOpen] = useState(false);
     const [openDropdowns, setOpenDropdowns] = useState<Record<string, boolean>>({});
+    const pathname = usePathname();
+
 
     const toggleDropdown = (name: string) => {
         setOpenDropdowns((prev) => ({
@@ -159,7 +169,7 @@ export default function SidebarLayout({
                                                                     type="button"
                                                                     onClick={() => toggleDropdown(item.name)}
                                                                     className={classNames(
-                                                                        item.current
+                                                                        item.current || isActivePath(pathname, item.href)
                                                                             ? "bg-white text-[#7A3E2C]"
                                                                             : "text-[#FBEFE5] hover:bg-white/10 hover:text-white",
                                                                         "group flex w-full items-center justify-between gap-x-3 rounded-md p-2 text-sm/6 font-semibold transition-colors"
@@ -169,7 +179,7 @@ export default function SidebarLayout({
                                                                         <item.icon
                                                                             aria-hidden="true"
                                                                             className={classNames(
-                                                                                item.current
+                                                                                item.current || isActivePath(pathname, item.href)
                                                                                     ? "text-[#7A3E2C]"
                                                                                     : "text-[#FBEFE5] group-hover:text-white",
                                                                                 "size-6 shrink-0"
@@ -205,7 +215,7 @@ export default function SidebarLayout({
                                                             <Link
                                                                 href={item.href || "#"}
                                                                 className={classNames(
-                                                                    item.current
+                                                                    item.current || isActivePath(pathname, item.href)
                                                                         ? "bg-white text-[#7A3E2C]"
                                                                         : "text-[#FBEFE5] hover:bg-white/10 hover:text-white",
                                                                     "group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold transition-colors"
@@ -215,7 +225,7 @@ export default function SidebarLayout({
                                                                 <item.icon
                                                                     aria-hidden="true"
                                                                     className={classNames(
-                                                                        item.current
+                                                                        item.current || isActivePath(pathname, item.href)
                                                                             ? "text-[#7A3E2C]"
                                                                             : "text-[#FBEFE5] group-hover:text-white",
                                                                         "size-6 shrink-0"
@@ -285,7 +295,7 @@ export default function SidebarLayout({
                                                             type="button"
                                                             onClick={() => toggleDropdown(item.name)}
                                                             className={classNames(
-                                                                item.current
+                                                                item.current || isActivePath(pathname, item.href)
                                                                     ? "bg-white text-[#7A3E2C]"
                                                                     : "text-[#FBEFE5] hover:bg:white/10 hover:text-white".replace("bg:white", "bg-white"),
                                                                 "group flex w-full items-center justify-between gap-x-3 rounded-md p-2 text-sm/6 font-semibold transition-colors"
@@ -295,7 +305,7 @@ export default function SidebarLayout({
                                                                 <item.icon
                                                                     aria-hidden="true"
                                                                     className={classNames(
-                                                                        item.current
+                                                                        item.current || isActivePath(pathname, item.href)
                                                                             ? "text-[#7A3E2C]"
                                                                             : "text-[#FBEFE5] group-hover:text-white",
                                                                         "size-6 shrink-0"
@@ -330,7 +340,7 @@ export default function SidebarLayout({
                                                     <Link
                                                         href={item.href || "#"}
                                                         className={classNames(
-                                                            item.current
+                                                            item.current || isActivePath(pathname, item.href)
                                                                 ? "bg-white text-[#7A3E2C]"
                                                                 : "text-[#FBEFE5] hover:bg-white/10 hover:text-white",
                                                             "group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold transition-colors"
@@ -339,7 +349,7 @@ export default function SidebarLayout({
                                                         <item.icon
                                                             aria-hidden="true"
                                                             className={classNames(
-                                                                item.current
+                                                                item.current || isActivePath(pathname, item.href)
                                                                     ? "text-[#7A3E2C]"
                                                                     : "text-[#FBEFE5] group-hover:text-white",
                                                                 "size-6 shrink-0"
