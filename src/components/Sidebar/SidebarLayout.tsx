@@ -62,8 +62,8 @@ const navigation: NavItem[] = [
             { name: "Hero Section", href: "/beranda/display/hero" },
             { name: "Brand Story", href: "/beranda/display/brand-story" },
             { name: "Brand Statement", href: "/beranda/display/brand-statement" },
-            { name: "Landing Sections", href: "/display/sections" },
-            { name: "Theme & Branding", href: "/display/theme" },
+            { name: "Service Recommendation", href: "/beranda/display/service-section" },
+            { name: "Social Media", href: "/beranda/display/social-media" },
         ],
     },
 ];
