@@ -17,6 +17,7 @@ import {
     ChartPieIcon,
     Cog6ToothIcon,
     DocumentDuplicateIcon,
+    DocumentTextIcon,
     FolderIcon,
     HomeIcon,
     UsersIcon,
@@ -54,7 +55,7 @@ const navigation: NavItem[] = [
     { name: "Reservations", href: "/reservations", icon: CalendarIcon, current: false },
     { name: "Guests", href: "/guests", icon: UsersIcon, current: false },
     { name: "Documents", href: "/documents", icon: DocumentDuplicateIcon, current: false },
-    { name: "Reports", href: "/reports", icon: ChartPieIcon, current: false },
+    { name: "TnC Policy", href: "/beranda/terms-refund", icon: DocumentTextIcon, current: false },
     {
         name: "Display Management", // kelola tampilan (English)
         icon: Cog6ToothIcon,
@@ -70,7 +71,6 @@ const navigation: NavItem[] = [
 
 const propertyGroups: GroupItem[] = [
     { id: 1, name: "All Properties", href: "#", initial: "AP", current: true },
-    { id: 2, name: "Premium Villas", href: "#", initial: "PV", current: false },
     { id: 3, name: "Partner Owners", href: "#", initial: "PO", current: false },
 ];
 
