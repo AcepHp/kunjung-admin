@@ -1,6 +1,8 @@
-"use client";
+"use client"
 
-import { useState, ReactNode } from "react";
+import type React from "react"
+
+import { useState, type ReactNode } from "react"
 import {
     Dialog,
     DialogBackdrop,
@@ -10,51 +12,50 @@ import {
     MenuItem,
     MenuItems,
     TransitionChild,
-} from "@headlessui/react";
+} from "@headlessui/react"
 import {
     Bars3Icon,
     CalendarIcon,
-    ChartPieIcon,
+    ChatBubbleLeftRightIcon,
     Cog6ToothIcon,
-    DocumentDuplicateIcon,
     DocumentTextIcon,
     FolderIcon,
     HomeIcon,
     UsersIcon,
     XMarkIcon,
-} from "@heroicons/react/24/outline";
-import { ChevronDownIcon } from "@heroicons/react/20/solid";
-import Image from "next/image";
-import Link from "next/link";
-import { usePathname } from "next/navigation";
+} from "@heroicons/react/24/outline"
+import { ChevronDownIcon } from "@heroicons/react/20/solid"
+import Image from "next/image"
+import Link from "next/link"
+import { usePathname } from "next/navigation"
 
 type NavChild = {
-    name: string;
-    href: string;
-};
+    name: string
+    href: string
+}
 
 type NavItem = {
-    name: string;
-    href?: string;
-    icon: React.ComponentType<React.SVGProps<SVGSVGElement>>;
-    current?: boolean;
-    children?: NavChild[];
-};
+    name: string
+    href?: string
+    icon: React.ComponentType<React.SVGProps<SVGSVGElement>>
+    current?: boolean
+    children?: NavChild[]
+}
 
 type GroupItem = {
-    id: number;
-    name: string;
-    href: string;
-    initial: string;
-    current?: boolean;
-};
+    id: number
+    name: string
+    href: string
+    initial: string
+    current?: boolean
+}
 
 const navigation: NavItem[] = [
-    { name: "Dashboard", href: "/dashboard", icon: HomeIcon, current: true },
+    { name: "Dashboard", href: "/beranda", icon: HomeIcon, current: false },
     { name: "Villas", href: "/villas", icon: FolderIcon, current: false },
     { name: "Reservations", href: "/reservations", icon: CalendarIcon, current: false },
     { name: "Guests", href: "/guests", icon: UsersIcon, current: false },
-    { name: "Documents", href: "/documents", icon: DocumentDuplicateIcon, current: false },
+    { name: "Testimonial", href: "/beranda/testimonial", icon: ChatBubbleLeftRightIcon, current: false },
     { name: "TnC Policy", href: "/beranda/terms-refund", icon: DocumentTextIcon, current: false },
     {
         name: "Display Management", // kelola tampilan (English)
@@ -67,54 +68,68 @@ const navigation: NavItem[] = [
             { name: "Social Media", href: "/beranda/display/social-media" },
         ],
     },
-];
+]
 
 const propertyGroups: GroupItem[] = [
-    { id: 1, name: "All Properties", href: "#", initial: "AP", current: true },
+    { id: 1, name: "All Properties", href: "#", initial: "AP", current: false },
     { id: 3, name: "Partner Owners", href: "#", initial: "PO", current: false },
-];
+]
 
 const userNavigation = [
     { name: "Your profile", href: "#" },
     { name: "Sign out", href: "#" },
-];
+]
 
 function classNames(...classes: Array<string | boolean | null | undefined>) {
-    return classes.filter(Boolean).join(" ");
+    return classes.filter(Boolean).join(" ")
 }
 
 const isActivePath = (pathname: string, href?: string) => {
-    if (!href) return false;
-    return pathname === href || pathname.startsWith(href + "/");
-};
+    if (!href) return false
 
+    // Dashboard hanya aktif jika EXACT "/beranda"
+    if (href === "/beranda") {
+        return pathname === "/beranda"
+    }
+
+    // Menu lain aktif jika exact match atau sub-path
+    return pathname === href || pathname.startsWith(href + "/")
+}
+
+const isChildActive = (pathname: string, children?: NavChild[]) => {
+    if (!children) return false
+    return children.some((child) => pathname === child.href || pathname.startsWith(child.href + "/"))
+}
 
 export default function SidebarLayout({
     children,
 }: {
-    children: ReactNode;
+    children: ReactNode
 }) {
-    const [sidebarOpen, setSidebarOpen] = useState(false);
-    const [openDropdowns, setOpenDropdowns] = useState<Record<string, boolean>>({});
-    const pathname = usePathname();
-
+    const [sidebarOpen, setSidebarOpen] = useState(false)
+    const pathname = usePathname()
+    const [openDropdowns, setOpenDropdowns] = useState<Record<string, boolean>>(() => {
+        const initial: Record<string, boolean> = {}
+        navigation.forEach((item) => {
+            if (item.children && isChildActive(pathname, item.children)) {
+                initial[item.name] = true
+            }
+        })
+        return initial
+    })
 
     const toggleDropdown = (name: string) => {
         setOpenDropdowns((prev) => ({
             ...prev,
             [name]: !prev[name],
-        }));
-    };
+        }))
+    }
 
     return (
         <>
             <div>
                 {/* Mobile sidebar */}
-                <Dialog
-                    open={sidebarOpen}
-                    onClose={setSidebarOpen}
-                    className="relative z-50 lg:hidden"
-                >
+                <Dialog open={sidebarOpen} onClose={setSidebarOpen} className="relative z-50 lg:hidden">
                     <DialogBackdrop
                         transition
                         className="fixed inset-0 bg-black/70 transition-opacity duration-300 ease-linear data-closed:opacity-0"
@@ -127,11 +142,7 @@ export default function SidebarLayout({
                         >
                             <TransitionChild>
                                 <div className="absolute top-0 left-full flex w-16 justify-center pt-5 duration-300 ease-in-out data-closed:opacity-0">
-                                    <button
-                                        type="button"
-                                        onClick={() => setSidebarOpen(false)}
-                                        className="-m-2.5 p-2.5"
-                                    >
+                                    <button type="button" onClick={() => setSidebarOpen(false)} className="-m-2.5 p-2.5">
                                         <span className="sr-only">Close sidebar</span>
                                         <XMarkIcon aria-hidden="true" className="size-6 text-white" />
                                     </button>
@@ -141,20 +152,10 @@ export default function SidebarLayout({
                             {/* Sidebar content (mobile) */}
                             <div className="flex grow flex-col gap-y-5 overflow-y-auto bg-[#7A3E2C] px-6 pb-4">
                                 <div className="flex h-16 shrink-0 items-center gap-3 mt-2">
-                                    <Image
-                                        alt="Kunjung"
-                                        src="/logo.png"
-                                        width={32}
-                                        height={32}
-                                        className="rounded-md bg-white/10"
-                                    />
+                                    <Image alt="Kunjung" src="/logo.png" width={32} height={32} className="rounded-md bg-white/10" />
                                     <div className="flex flex-col">
-                                        <span className="text-sm font-semibold text-white tracking-wide">
-                                            Kunjung Admin
-                                        </span>
-                                        <span className="text-[11px] text-[#FBEFE5]">
-                                            Villa & Reservation Panel
-                                        </span>
+                                        <span className="text-sm font-semibold text-white tracking-wide">Kunjung Admin</span>
+                                        <span className="text-[11px] text-[#FBEFE5]">Villa & Reservation Panel</span>
                                     </div>
                                 </div>
                                 <nav className="flex flex-1 flex-col">
@@ -169,20 +170,24 @@ export default function SidebarLayout({
                                                                     type="button"
                                                                     onClick={() => toggleDropdown(item.name)}
                                                                     className={classNames(
-                                                                        item.current || isActivePath(pathname, item.href)
+                                                                        item.current ||
+                                                                            isActivePath(pathname, item.href) ||
+                                                                            isChildActive(pathname, item.children)
                                                                             ? "bg-white text-[#7A3E2C]"
                                                                             : "text-[#FBEFE5] hover:bg-white/10 hover:text-white",
-                                                                        "group flex w-full items-center justify-between gap-x-3 rounded-md p-2 text-sm/6 font-semibold transition-colors"
+                                                                        "group flex w-full items-center justify-between gap-x-3 rounded-md p-2 text-sm/6 font-semibold transition-colors",
                                                                     )}
                                                                 >
                                                                     <span className="flex items-center gap-x-3">
                                                                         <item.icon
                                                                             aria-hidden="true"
                                                                             className={classNames(
-                                                                                item.current || isActivePath(pathname, item.href)
+                                                                                item.current ||
+                                                                                    isActivePath(pathname, item.href) ||
+                                                                                    isChildActive(pathname, item.children)
                                                                                     ? "text-[#7A3E2C]"
                                                                                     : "text-[#FBEFE5] group-hover:text-white",
-                                                                                "size-6 shrink-0"
+                                                                                "size-6 shrink-0",
                                                                             )}
                                                                         />
                                                                         {item.name}
@@ -191,7 +196,7 @@ export default function SidebarLayout({
                                                                         aria-hidden="true"
                                                                         className={classNames(
                                                                             openDropdowns[item.name] ? "rotate-180" : "",
-                                                                            "size-4 text-[#FBEFE5] transition-transform duration-200"
+                                                                            "size-4 text-[#FBEFE5] transition-transform duration-200",
                                                                         )}
                                                                     />
                                                                 </button>
@@ -201,7 +206,12 @@ export default function SidebarLayout({
                                                                             <li key={child.name}>
                                                                                 <Link
                                                                                     href={child.href}
-                                                                                    className="block rounded-md py-1.5 px-2 text-xs/5 text-[#FBEFE5] hover:bg-white/10 hover:text-white"
+                                                                                    className={classNames(
+                                                                                        isActivePath(pathname, child.href)
+                                                                                            ? "bg-white/20 text-white font-semibold"
+                                                                                            : "text-[#FBEFE5] hover:bg-white/10 hover:text-white",
+                                                                                        "block rounded-md py-1.5 px-2 text-xs/5 transition-colors",
+                                                                                    )}
                                                                                     onClick={() => setSidebarOpen(false)}
                                                                                 >
                                                                                     {child.name}
@@ -218,7 +228,7 @@ export default function SidebarLayout({
                                                                     item.current || isActivePath(pathname, item.href)
                                                                         ? "bg-white text-[#7A3E2C]"
                                                                         : "text-[#FBEFE5] hover:bg-white/10 hover:text-white",
-                                                                    "group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold transition-colors"
+                                                                    "group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold transition-colors",
                                                                 )}
                                                                 onClick={() => setSidebarOpen(false)}
                                                             >
@@ -228,7 +238,7 @@ export default function SidebarLayout({
                                                                         item.current || isActivePath(pathname, item.href)
                                                                             ? "text-[#7A3E2C]"
                                                                             : "text-[#FBEFE5] group-hover:text-white",
-                                                                        "size-6 shrink-0"
+                                                                        "size-6 shrink-0",
                                                                     )}
                                                                 />
                                                                 {item.name}
@@ -239,9 +249,7 @@ export default function SidebarLayout({
                                             </ul>
                                         </li>
                                         <li>
-                                            <div className="text-xs/6 font-semibold text-[#F8DAC4]">
-                                                Property groups
-                                            </div>
+                                            <div className="text-xs/6 font-semibold text-[#F8DAC4]">Property groups</div>
                                             <ul role="list" className="-mx-2 mt-2 space-y-1">
                                                 {propertyGroups.map((group) => (
                                                     <li key={group.id}>
@@ -251,7 +259,7 @@ export default function SidebarLayout({
                                                                 group.current
                                                                     ? "bg-white/10 text-white"
                                                                     : "text-[#FBEFE5] hover:bg-white/10 hover:text-white",
-                                                                "group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold transition-colors"
+                                                                "group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold transition-colors",
                                                             )}
                                                         >
                                                             <span className="flex size-6 shrink-0 items-center justify-center rounded-lg border border-[#F3C7A4] bg-[#8B4A36] text-[0.625rem] font-medium text-white">
@@ -275,12 +283,8 @@ export default function SidebarLayout({
                     <div className="flex grow flex-col gap-y-5 overflow-y-auto bg-[#7A3E2C] px-6 pb-4">
                         <div className="flex h-16 shrink-0 items-center gap-3 mt-2">
                             <div className="flex flex-col">
-                                <span className="text-sm font-semibold text-white tracking-wide">
-                                    Kunjung Admin
-                                </span>
-                                <span className="text-[11px] text-[#FBEFE5]">
-                                    Villa & Reservation Panel
-                                </span>
+                                <span className="text-sm font-semibold text-white tracking-wide">Kunjung Admin</span>
+                                <span className="text-[11px] text-[#FBEFE5]">Villa & Reservation Panel</span>
                             </div>
                         </div>
                         <nav className="flex flex-1 flex-col">
@@ -295,20 +299,24 @@ export default function SidebarLayout({
                                                             type="button"
                                                             onClick={() => toggleDropdown(item.name)}
                                                             className={classNames(
-                                                                item.current || isActivePath(pathname, item.href)
+                                                                item.current ||
+                                                                    isActivePath(pathname, item.href) ||
+                                                                    isChildActive(pathname, item.children)
                                                                     ? "bg-white text-[#7A3E2C]"
-                                                                    : "text-[#FBEFE5] hover:bg:white/10 hover:text-white".replace("bg:white", "bg-white"),
-                                                                "group flex w-full items-center justify-between gap-x-3 rounded-md p-2 text-sm/6 font-semibold transition-colors"
+                                                                    : "text-[#FBEFE5] hover:bg-white/10 hover:text-white",
+                                                                "group flex w-full items-center justify-between gap-x-3 rounded-md p-2 text-sm/6 font-semibold transition-colors",
                                                             )}
                                                         >
                                                             <span className="flex items-center gap-x-3">
                                                                 <item.icon
                                                                     aria-hidden="true"
                                                                     className={classNames(
-                                                                        item.current || isActivePath(pathname, item.href)
+                                                                        item.current ||
+                                                                            isActivePath(pathname, item.href) ||
+                                                                            isChildActive(pathname, item.children)
                                                                             ? "text-[#7A3E2C]"
                                                                             : "text-[#FBEFE5] group-hover:text-white",
-                                                                        "size-6 shrink-0"
+                                                                        "size-6 shrink-0",
                                                                     )}
                                                                 />
                                                                 {item.name}
@@ -317,7 +325,7 @@ export default function SidebarLayout({
                                                                 aria-hidden="true"
                                                                 className={classNames(
                                                                     openDropdowns[item.name] ? "rotate-180" : "",
-                                                                    "size-4 text-[#FBEFE5] transition-transform duration-200"
+                                                                    "size-4 text-[#FBEFE5] transition-transform duration-200",
                                                                 )}
                                                             />
                                                         </button>
@@ -327,7 +335,12 @@ export default function SidebarLayout({
                                                                     <li key={child.name}>
                                                                         <Link
                                                                             href={child.href}
-                                                                            className="block rounded-md py-1.5 px-2 text-xs/5 text-[#FBEFE5] hover:bg-white/10 hover:text-white"
+                                                                            className={classNames(
+                                                                                isActivePath(pathname, child.href)
+                                                                                    ? "bg-white/20 text-white font-semibold"
+                                                                                    : "text-[#FBEFE5] hover:bg-white/10 hover:text-white",
+                                                                                "block rounded-md py-1.5 px-2 text-xs/5 transition-colors",
+                                                                            )}
                                                                         >
                                                                             {child.name}
                                                                         </Link>
@@ -343,7 +356,7 @@ export default function SidebarLayout({
                                                             item.current || isActivePath(pathname, item.href)
                                                                 ? "bg-white text-[#7A3E2C]"
                                                                 : "text-[#FBEFE5] hover:bg-white/10 hover:text-white",
-                                                            "group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold transition-colors"
+                                                            "group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold transition-colors",
                                                         )}
                                                     >
                                                         <item.icon
@@ -352,7 +365,7 @@ export default function SidebarLayout({
                                                                 item.current || isActivePath(pathname, item.href)
                                                                     ? "text-[#7A3E2C]"
                                                                     : "text-[#FBEFE5] group-hover:text-white",
-                                                                "size-6 shrink-0"
+                                                                "size-6 shrink-0",
                                                             )}
                                                         />
                                                         {item.name}
@@ -363,9 +376,7 @@ export default function SidebarLayout({
                                     </ul>
                                 </li>
                                 <li>
-                                    <div className="text-xs/6 font-semibold text-[#F8DAC4]">
-                                        Property groups
-                                    </div>
+                                    <div className="text-xs/6 font-semibold text-[#F8DAC4]">Property groups</div>
                                     <ul role="list" className="-mx-2 mt-2 space-y-1">
                                         {propertyGroups.map((group) => (
                                             <li key={group.id}>
@@ -375,7 +386,7 @@ export default function SidebarLayout({
                                                         group.current
                                                             ? "bg-white/10 text-white"
                                                             : "text-[#FBEFE5] hover:bg-white/10 hover:text-white",
-                                                        "group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold transition-colors"
+                                                        "group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold transition-colors",
                                                     )}
                                                 >
                                                     <span className="flex size-6 shrink-0 items-center justify-center rounded-lg border border-[#F3C7A4] bg-[#8B4A36] text-[0.625rem] font-medium text-white">
@@ -396,27 +407,17 @@ export default function SidebarLayout({
                 <div className="lg:pl-72">
                     {/* Top bar */}
                     <div className="sticky top-0 z-40 flex h-16 shrink-0 items-center gap-x-4 border-b border-gray-200 bg-white px-4 shadow-xs sm:gap-x-6 sm:px-6 lg:px-8">
-                        <button
-                            type="button"
-                            onClick={() => setSidebarOpen(true)}
-                            className="-m-2.5 p-2.5 text-gray-700 lg:hidden"
-                        >
+                        <button type="button" onClick={() => setSidebarOpen(true)} className="-m-2.5 p-2.5 text-gray-700 lg:hidden">
                             <span className="sr-only">Open sidebar</span>
                             <Bars3Icon aria-hidden="true" className="size-6" />
                         </button>
 
                         {/* Separator (mobile) */}
-                        <div
-                            aria-hidden="true"
-                            className="h-6 w-px bg-gray-900/10 lg:hidden"
-                        />
+                        <div aria-hidden="true" className="h-6 w-px bg-gray-900/10 lg:hidden" />
 
                         <div className="flex flex-1 items-center justify-end gap-x-4 lg:gap-x-6">
                             {/* Separator (desktop) */}
-                            <div
-                                aria-hidden="true"
-                                className="hidden lg:block lg:h-6 lg:w-px lg:bg-gray-900/10"
-                            />
+                            <div aria-hidden="true" className="hidden lg:block lg:h-6 lg:w-px lg:bg-gray-900/10" />
 
                             {/* Profile dropdown */}
                             <Menu as="div" className="relative">
@@ -426,16 +427,10 @@ export default function SidebarLayout({
                                         AK
                                     </span>
                                     <span className="hidden lg:flex lg:items-center">
-                                        <span
-                                            aria-hidden="true"
-                                            className="ml-3 text-sm/6 font-semibold text-gray-900"
-                                        >
+                                        <span aria-hidden="true" className="ml-3 text-sm/6 font-semibold text-gray-900">
                                             Admin Kunjung
                                         </span>
-                                        <ChevronDownIcon
-                                            aria-hidden="true"
-                                            className="ml-2 size-5 text-gray-400"
-                                        />
+                                        <ChevronDownIcon aria-hidden="true" className="ml-2 size-5 text-gray-400" />
                                     </span>
                                 </MenuButton>
                                 <MenuItems
@@ -464,5 +459,5 @@ export default function SidebarLayout({
                 </div>
             </div>
         </>
-    );
+    )
 }

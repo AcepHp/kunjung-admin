@@ -155,14 +155,6 @@ export default function HeroTable({ slides }: Props) {
                         }}
                         placeholder="Search slides..."
                     />
-                    <Link href="/beranda/display/hero/add-slide">
-                        <button
-                            type="button"
-                            className="whitespace-nowrap rounded-full bg-[#7A3E2C] px-4 py-1.5 text-xs font-medium text-white hover:bg-[#5C2D20] transition"
-                        >
-                            + Add Slide
-                        </button>
-                    </Link>
                 </div>
             </div>
 
@@ -252,14 +244,6 @@ export default function HeroTable({ slides }: Props) {
                                             </button>
                                         </Link>
 
-                                        {/* Delete */}
-                                        <button
-                                            type="button"
-                                            className="inline-flex items-center gap-1.5 rounded-md border border-red-200 px-3 py-1.5 text-xs font-medium text-red-600 hover:bg-red-50 transition"
-                                        >
-                                            <TrashIcon className="h-4 w-4" />
-                                            Delete
-                                        </button>
                                     </div>
                                 </td>
 
@@ -270,15 +254,6 @@ export default function HeroTable({ slides }: Props) {
                 </table>
             </div>
 
-            {/* Pagination */}
-            <div className="border-t border-[#EFE3D7] px-6 py-3">
-                <Pagination
-                    page={page}
-                    total={processedSlides.length}
-                    pageSize={pageSize}
-                    onPageChange={setPage}
-                />
-            </div>
         </section>
     );
 }

@@ -12,7 +12,7 @@ export const ServiceSectionData: ServiceSection[] = [
     },
     {
         id: 2,
-        title: 'weddings',
+        title: 'events',
         imageUrl: 'stays.png',
     },
     {
