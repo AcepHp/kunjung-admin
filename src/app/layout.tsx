@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Libre_Baskerville, Space_Grotesk } from "next/font/google";
 import "./globals.css";
+import ClientLayoutContent from "@/components/ClientLayoutContent";
 
 const libreBaskerville = Libre_Baskerville({
   subsets: ["latin"],
