@@ -57,6 +57,7 @@ const navigation: NavItem[] = [
     { name: "Guests", href: "/guests", icon: UsersIcon, current: false },
     { name: "Testimonial", href: "/beranda/testimonial", icon: ChatBubbleLeftRightIcon, current: false },
     { name: "TnC Policy", href: "/beranda/terms-refund", icon: DocumentTextIcon, current: false },
+    { name: "Brand Ethos", href: "/beranda/brand-ethos", icon: UsersIcon, current: false },
     {
         name: "Display Management", // kelola tampilan (English)
         icon: Cog6ToothIcon,
