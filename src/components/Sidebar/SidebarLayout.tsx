@@ -21,6 +21,7 @@ import {
     DocumentTextIcon,
     FolderIcon,
     HomeIcon,
+    SparklesIcon,
     UsersIcon,
     XMarkIcon,
 } from "@heroicons/react/24/outline"
@@ -54,10 +55,17 @@ const navigation: NavItem[] = [
     { name: "Dashboard", href: "/beranda", icon: HomeIcon, current: false },
     { name: "Villas", href: "/villas", icon: FolderIcon, current: false },
     { name: "Reservations", href: "/reservations", icon: CalendarIcon, current: false },
-    { name: "Guests", href: "/guests", icon: UsersIcon, current: false },
-    { name: "Testimonial", href: "/beranda/testimonial", icon: ChatBubbleLeftRightIcon, current: false },
-    { name: "TnC Policy", href: "/beranda/terms-refund", icon: DocumentTextIcon, current: false },
-    { name: "Brand Ethos", href: "/beranda/brand-ethos", icon: UsersIcon, current: false },
+    {
+        name: "User Management",
+        icon: UsersIcon,
+        children: [
+            { name: "Guest", href: "/beranda/manage-user/guest" },
+            { name: "Home Owner", href: "/beranda/manage-user/home-owner" },
+        ],
+    },
+    { name: "Testimonial Management", href: "/beranda/testimonial", icon: ChatBubbleLeftRightIcon, current: false },
+    { name: "TnC Policy Management", href: "/beranda/terms-refund", icon: DocumentTextIcon, current: false },
+    { name: "Brand Ethos Management", href: "/beranda/brand-ethos", icon: SparklesIcon, current: false },
     {
         name: "Display Management", // kelola tampilan (English)
         icon: Cog6ToothIcon,
