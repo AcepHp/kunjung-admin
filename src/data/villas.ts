@@ -1,0 +1,602 @@
+type VillaDetail = {
+    title: string;
+    description: string;
+    images: string[];
+};
+
+type Amenity = {
+    label: string;
+    available: boolean;
+};
+
+type Discount = {
+    percentage: number;        // contoh: 10 = 10%
+    label?: string;            // contoh: "New Year Sale"
+    appliesTo?: "weekday" | "weekend" | "both";
+};
+
+type Villa = {
+    id: number;
+    name: string;
+    location: string;
+    guests: number;
+    bedrooms: number;
+    bathrooms: number;
+    simpleDesc: string;
+    description: string;
+    image: string;
+    descImages: string[];
+    weekendPrice: string;
+    weekdayPrice: string;
+    rating: number;
+    reviews: number;
+    amenities: Amenity[];
+    thingsToDo?: string;
+    address: string;
+    mapUrl: string;
+
+    discount?: Discount; // ✅ TAMBAHAN
+
+    detailHeader?: string;
+    virtualLink?: string;
+    details: VillaDetail[];
+};
+
+const descImages = [
+    "/images/villa-1.jpg",
+    "/images/villa-2.jpg",
+    "/images/villa-3.jpg",
+];
+
+
+const commonImages = [
+    "/images/villa-1.jpg",
+    "/images/villa-2.jpg",
+    "/images/villa-3.jpg",
+];
+
+const commonImages2 = [
+    "/images/villa-1.jpg",
+    "/images/villa-2.jpg",
+    "/images/villa-3.jpg",
+    "/images/villa-1.jpg",
+    "/images/villa-2.jpg",
+    "/images/villa-3.jpg",
+];
+
+const commonAmenities: Amenity[] = [
+    { label: "Hot tub", available: true },
+    { label: "TV", available: true },
+    { label: "Exterior security cameras on property", available: true },
+    { label: "Kitchen", available: true },
+    { label: "Free parking on premises", available: true },
+    { label: "Wifi", available: true },
+    { label: "Dedicated workspace", available: true },
+    { label: "Air conditioning", available: true },
+    { label: "Smoke alarm", available: false },
+];
+
+const commonDetails: VillaDetail[] = [
+    {
+        title: "Living Room",
+        description: "Spacious living room with natural lighting and cozy seating area.",
+        images: commonImages,
+    },
+    {
+        title: "Garden Area",
+        description: "Private garden suitable for relaxing and casual gatherings.",
+        images: commonImages,
+    },
+    {
+        title: "Kitchen & Dining",
+        description: "Fully equipped kitchen with a large dining table.",
+        images: commonImages2,
+    },
+    {
+        title: "Onsen",
+        description: "Private onsen-style hot tub for ultimate relaxation.",
+        images: commonImages,
+    },
+];
+
+export const villas: Villa[] = [
+    {
+        id: 1,
+        name: "Silas House",
+        location: "Setiabudi, Bandung",
+        guests: 15,
+        bedrooms: 5,
+        bathrooms: 3,
+        simpleDesc: "A tranquil stay in the city",
+        description:
+            "Silas House is a retreat for those who want to feel the warmth in the cool outskirts of Bandung. Through mid-century modern architecture and minimalist touches, you will find a light shine in an open space, a backyard featuring onsen, an outdoor lounge, and a wide balcony that looks out to a carpet of green valley view.",
+        image: "/images/villa-1.jpg",
+        descImages: descImages,
+        weekendPrice: "IDR 7.000.000",
+        weekdayPrice: "IDR 5.000.000",
+        discount: {
+            percentage: 10,
+            label: "Holiday Sale",
+            appliesTo: "both",
+        },
+        rating: 4.9,
+        reviews: 154,
+        amenities: [
+            { label: "Hot tub", available: true },
+            { label: "TV", available: true },
+            { label: "Exterior security cameras on property", available: true },
+
+            { label: "Kitchen", available: true },
+            { label: "Free parking on premises", available: true },
+            { label: "Wifi", available: true },
+
+            { label: "Dedicated workspace", available: true },
+            { label: "Air conditioning", available: true },
+            { label: "Smoke alarm", available: false },
+        ],
+
+        thingsToDo:
+            "Silas House is located in the additional part of Bandung city, where daily life continues in a typical urban structure.",
+        address:
+            "Setiabudi Regency, Jl. Lapiz Lazuli Blok C No.125, Kel. Cihideung, Kec. Parongpong, Bandung Barat, 40559",
+        mapUrl:
+            "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d37412.68649029256!2d107.52984755674326!3d-6.8706829513027525!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e68e4559bd023cd%3A0xb21724a94d165f8!2sJenderal%20Achmad%20Yani%20University!5e1!3m2!1sen!2sid!4v1758353571428!5m2!1sen!2sid",
+        virtualLink: "",
+
+        detailHeader:
+            "First impressions have meaning for the future. The unique of Silas House look’s expected to be remembered in a good way. It’s great to catch Silas house iconic facade.",
+        details: [
+            {
+                title: "Living Room",
+                description:
+                    "The large windows connect to our beautiful backyard. In a light-filled and spacious living room, enjoy playing games, watching Netflix, or karaoke night with everyone.",
+                images: commonImages,
+            },
+            {
+                title: "Garden Area",
+                description:
+                    "Silas House will always be a place for good things to come. The outdoor garden is a suitable area for any casual chatting while drinking a cup of tea.",
+                images: commonImages,
+            },
+            {
+                title: "Kitchen and Dining Room",
+                description:
+                    "After a relaxing time, hunger comes. In our fully equipped kitchen, you can prepare any meal you choose and share it with your loved ones.",
+                images: commonImages2,
+            },
+            {
+                title: "Onsen",
+                description:
+                    "Relax your body in an onsen while reading a book or conversing with friends. It’s the perfect place to unwind without having to fly to Japan.",
+                images: commonImages,
+            },
+        ],
+    },
+    {
+        id: 2,
+        name: "Montri House",
+        location: "Setiabudi, Bandung",
+        guests: 12,
+        bedrooms: 4,
+        bathrooms: 3,
+        simpleDesc: "A tranquil stay in the city",
+        description:
+            "Montri House combines modern elegance with comfort, making it a perfect stay for families and groups who want a stylish retreat in Bandung.",
+        image: "/images/villa-2.jpg",
+        descImages: descImages,
+        weekendPrice: "IDR 4.500.000",
+        weekdayPrice: "IDR 3.500.000",
+        rating: 4.7,
+        reviews: 87,
+        amenities: [
+            { label: "Hot tub", available: true },
+            { label: "TV", available: true },
+            { label: "Exterior security cameras on property", available: true },
+
+            { label: "Kitchen", available: true },
+            { label: "Free parking on premises", available: true },
+            { label: "Wifi", available: true },
+
+            { label: "Dedicated workspace", available: true },
+            { label: "Air conditioning", available: true },
+            { label: "Smoke alarm", available: false },
+        ],
+
+        thingsToDo:
+            "Explore modern Bandung with stylish interiors and spacious common areas.",
+        address: "Jl. Setiabudi No. 88, Bandung",
+        mapUrl:
+            "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3955.01!2d107.59!3d-6.84",
+        virtualLink: "",
+
+        detailHeader:
+            "First impressions have meaning for the future. The unique of Montri House look’s expected to be remembered in a good way.",
+        details: [
+            { title: "Living Room", description: "Spacious and minimalistic living area.", images: commonImages },
+            { title: "Garden Area", description: "Cozy backyard ideal for morning coffee.", images: commonImages },
+            { title: "Kitchen and Dining Room", description: "Modern kitchen for home-cooked meals.", images: commonImages },
+            { title: "Onsen", description: "Mini outdoor tub for relaxation.", images: commonImages },
+        ],
+    },
+    {
+        id: 3,
+        name: "Gemala House",
+        location: "Lembang, Bandung",
+        guests: 10,
+        bedrooms: 4,
+        bathrooms: 2,
+        simpleDesc: "A tranquil stay in the city",
+        description:
+            "Gemala House offers a serene villa experience with lush surroundings. A perfect blend of modern and natural vibes with cozy living spaces.",
+        image: "/images/villa-3.jpg",
+        descImages: descImages,
+        weekendPrice: "IDR 4.800.000",
+        weekdayPrice: "IDR 3.800.000",
+        rating: 4.8,
+        reviews: 102,
+        amenities: [
+            { label: "Hot tub", available: true },
+            { label: "TV", available: true },
+            { label: "Exterior security cameras on property", available: true },
+
+            { label: "Kitchen", available: true },
+            { label: "Free parking on premises", available: true },
+            { label: "Wifi", available: true },
+
+            { label: "Dedicated workspace", available: true },
+            { label: "Air conditioning", available: true },
+            { label: "Smoke alarm", available: false },
+        ],
+
+        thingsToDo:
+            "Enjoy the fresh mountain air and green valley landscapes while relaxing indoors.",
+        address: "Jl. Raya Lembang No. 45, Bandung",
+        mapUrl:
+            "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3954.99!2d107.61!3d-6.82",
+        virtualLink: "",
+
+        detailHeader:
+            "First impressions have meaning for the future. The unique of Gemala House look’s expected to be remembered in a good way.",
+        details: [
+            { title: "Living Room", description: "Open-plan with natural light.", images: commonImages },
+            { title: "Garden Area", description: "Private garden with soft lighting.", images: commonImages },
+            { title: "Kitchen and Dining Room", description: "Warm dining space for shared meals.", images: commonImages },
+            { title: "Onsen", description: "Private jacuzzi-style onsen.", images: commonImages },
+        ],
+    },
+    {
+        id: 4,
+        name: "Padri House",
+        location: "Parongpong, Bandung",
+        guests: 8,
+        bedrooms: 3,
+        bathrooms: 2,
+        simpleDesc: "A tranquil stay in the city",
+        description:
+            "Padri House blends natural design with contemporary comfort, ideal for smaller groups looking for a warm and inviting stay.",
+        image: "/images/villa-4.jpg",
+        descImages: descImages,
+        weekendPrice: "IDR 4.200.000",
+        weekdayPrice: "IDR 3.200.000",
+        rating: 4.7,
+        reviews: 65,
+        amenities: [
+            { label: "Hot tub", available: true },
+            { label: "TV", available: true },
+            { label: "Exterior security cameras on property", available: true },
+
+            { label: "Kitchen", available: true },
+            { label: "Free parking on premises", available: true },
+            { label: "Wifi", available: true },
+
+            { label: "Dedicated workspace", available: true },
+            { label: "Air conditioning", available: true },
+            { label: "Smoke alarm", available: false },
+        ],
+
+        thingsToDo:
+            "Take a walk in the surrounding countryside or relax by the indoor fireplace.",
+        address: "Jl. Parongpong No. 27, Bandung Barat",
+        mapUrl:
+            "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3955.00!2d107.57!3d-6.85",
+        virtualLink: "",
+
+        detailHeader:
+            "First impressions have meaning for the future. The unique of Padri House look’s expected to be remembered in a good way.",
+        details: [
+            { title: "Living Room", description: "Natural wooden textures meet modern furniture.", images: commonImages },
+            { title: "Garden Area", description: "Compact outdoor garden with bamboo accents.", images: commonImages },
+            { title: "Kitchen and Dining Room", description: "Open-concept kitchen for shared meals.", images: commonImages },
+            { title: "Onsen", description: "Private outdoor bath with stone finish.", images: commonImages },
+        ],
+    },
+    {
+        id: 5,
+        name: "Atma House",
+        location: "Dago, Bandung",
+        guests: 20,
+        bedrooms: 6,
+        bathrooms: 4,
+        simpleDesc: "A tranquil stay in the city",
+        description:
+            "Atma House is a spacious villa located in the heart of Dago, featuring large living areas, modern interiors, and a beautiful view of Bandung city.",
+        image: "/images/villa-1.jpg",
+        descImages: descImages,
+        weekendPrice: "IDR 8.500.000",
+        weekdayPrice: "IDR 6.500.000",
+        rating: 4.6,
+        reviews: 78,
+        amenities: [
+            { label: "Hot tub", available: true },
+            { label: "TV", available: true },
+            { label: "Exterior security cameras on property", available: true },
+
+            { label: "Kitchen", available: true },
+            { label: "Free parking on premises", available: true },
+            { label: "Wifi", available: true },
+
+            { label: "Dedicated workspace", available: true },
+            { label: "Air conditioning", available: true },
+            { label: "Smoke alarm", available: false },
+        ],
+
+        thingsToDo:
+            "Enjoy city views from the balcony and explore the vibrant neighborhood of Dago.",
+        address: "Jl. Ir. H. Juanda No. 100, Dago, Bandung",
+        mapUrl:
+            "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3955.02!2d107.62!3d-6.87",
+        virtualLink: "",
+
+        detailHeader:
+            "First impressions have meaning for the future. The unique of Atma House look’s expected to be remembered in a good way.",
+        details: [
+            { title: "Living Room", description: "Grand space with panoramic city views.", images: commonImages },
+            { title: "Garden Area", description: "Rooftop-style garden ideal for gatherings.", images: commonImages },
+            { title: "Kitchen and Dining Room", description: "Spacious kitchen with marble counter.", images: commonImages },
+            { title: "Onsen", description: "Indoor heated bath with city view.", images: commonImages },
+        ],
+    },
+    {
+        id: 6,
+        name: "Nusa Villa",
+        location: "Ciwidey, Bandung",
+        guests: 18,
+        bedrooms: 5,
+        bathrooms: 4,
+        simpleDesc: "A tranquil stay in the city",
+        description:
+            "Surrounded by natural landscapes, Nusa Villa offers a retreat into tranquility with spacious gardens and cozy interior designs.",
+        image: "/images/villa-1.jpg",
+        descImages: descImages,
+        weekendPrice: "IDR 7.500.000",
+        weekdayPrice: "IDR 5.500.000",
+        rating: 4.8,
+        reviews: 92,
+        amenities: [
+            { label: "Hot tub", available: true },
+            { label: "TV", available: true },
+            { label: "Exterior security cameras on property", available: true },
+
+            { label: "Kitchen", available: true },
+            { label: "Free parking on premises", available: true },
+            { label: "Wifi", available: true },
+
+            { label: "Dedicated workspace", available: true },
+            { label: "Air conditioning", available: true },
+            { label: "Smoke alarm", available: false },
+        ],
+
+        thingsToDo:
+            "Relax with outdoor activities, garden walks, and enjoy fresh Ciwidey air.",
+        address: "Jl. Raya Ciwidey No. 12, Ciwidey, Bandung",
+        mapUrl:
+            "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3955.03!2d107.55!3d-6.89",
+        virtualLink: "",
+        detailHeader:
+            "First impressions have meaning for the future. The unique of Nusa Villa look’s expected to be remembered in a good way.",
+        details: [
+            { title: "Living Room", description: "Tranquil space with lush greenery view.", images: commonImages },
+            { title: "Garden Area", description: "Sprawling lawn perfect for tea time.", images: commonImages },
+            { title: "Kitchen and Dining Room", description: "Warm rustic interior for group meals.", images: commonImages },
+            { title: "Onsen", description: "Outdoor hot tub surrounded by mountain air.", images: commonImages },
+        ],
+    },
+    {
+        id: 7,
+        name: "Kala Villa",
+        location: "Ciumbuleuit, Bandung",
+        guests: 14,
+        bedrooms: 4,
+        bathrooms: 3,
+        simpleDesc: "A tranquil stay in the city",
+        description: "Elegant villa with cozy ambience.",
+        image: "/images/villa-1.jpg",
+        descImages: descImages,
+        weekendPrice: "IDR 6.000.000",
+        weekdayPrice: "IDR 4.500.000",
+        rating: 4.7,
+        reviews: 71,
+        amenities: commonAmenities,
+        thingsToDo: "Enjoy city skyline at night.",
+        address: "Ciumbuleuit, Bandung",
+        mapUrl: "",
+        virtualLink: "",
+        details: commonDetails,
+    },
+    {
+        id: 8,
+        name: "Ruma Senja",
+        location: "Lembang, Bandung",
+        guests: 16,
+        bedrooms: 5,
+        bathrooms: 4,
+        simpleDesc: "A tranquil stay in the city",
+        description: "Perfect sunset-view villa.",
+        image: "/images/villa-2.jpg",
+        descImages: descImages,
+        weekendPrice: "IDR 6.800.000",
+        weekdayPrice: "IDR 5.200.000",
+        rating: 4.9,
+        reviews: 110,
+        amenities: commonAmenities,
+        thingsToDo: "Sunset and photo moments.",
+        address: "Lembang, Bandung",
+        mapUrl: "",
+        virtualLink: "",
+        details: commonDetails,
+    },
+    {
+        id: 9,
+        name: "Aruna House",
+        location: "Dago Atas, Bandung",
+        guests: 10,
+        bedrooms: 4,
+        bathrooms: 3,
+        simpleDesc: "A tranquil stay in the city",
+        description: "Modern tropical house.",
+        image: "/images/villa-3.jpg",
+        descImages: descImages,
+        weekendPrice: "IDR 5.000.000",
+        weekdayPrice: "IDR 3.900.000",
+        rating: 4.6,
+        reviews: 64,
+        amenities: commonAmenities,
+        thingsToDo: "Chill and city exploration.",
+        address: "Dago Atas, Bandung",
+        mapUrl: "",
+        virtualLink: "",
+        details: commonDetails,
+    },
+    {
+        id: 10,
+        name: "Bumi Villa",
+        location: "Parompong, Bandung",
+        guests: 22,
+        bedrooms: 7,
+        bathrooms: 5,
+        simpleDesc: "A tranquil stay in the city",
+        description: "Large villa for events & families.",
+        image: "/images/villa-1.jpg",
+        descImages: descImages,
+        weekendPrice: "IDR 9.500.000",
+        weekdayPrice: "IDR 7.000.000",
+        rating: 4.8,
+        reviews: 120,
+        amenities: commonAmenities,
+        thingsToDo: "Gatherings and BBQ nights.",
+        address: "Parompong, Bandung",
+        mapUrl: "",
+        virtualLink: "",
+        details: commonDetails,
+    },
+    {
+        id: 11,
+        name: "Langit House",
+        location: "Punclut, Bandung",
+        guests: 12,
+        bedrooms: 4,
+        bathrooms: 3,
+        simpleDesc: "A tranquil stay in the city",
+        description: "Sky-high view villa.",
+        image: "/images/villa-2.jpg",
+        descImages: descImages,
+        weekendPrice: "IDR 5.800.000",
+        weekdayPrice: "IDR 4.200.000",
+        rating: 4.7,
+        reviews: 89,
+        amenities: commonAmenities,
+        thingsToDo: "Skyline view and relaxation.",
+        address: "Punclut, Bandung",
+        mapUrl: "",
+        virtualLink: "",
+        details: commonDetails,
+    },
+    {
+        id: 12,
+        name: "Svara Villa",
+        location: "Dago Pakar, Bandung",
+        guests: 9,
+        bedrooms: 3,
+        bathrooms: 2,
+        simpleDesc: "A tranquil stay in the city",
+        description: "Quiet modern sanctuary.",
+        image: "/images/villa-3.jpg",
+        descImages: descImages,
+        weekendPrice: "IDR 4.300.000",
+        weekdayPrice: "IDR 3.200.000",
+        rating: 4.6,
+        reviews: 55,
+        amenities: commonAmenities,
+        thingsToDo: "Relax and meditate.",
+        address: "Dago Pakar, Bandung",
+        mapUrl: "",
+        virtualLink: "",
+        details: commonDetails,
+    },
+    {
+        id: 13,
+        name: "Tara House",
+        location: "Lembang, Bandung",
+        guests: 17,
+        bedrooms: 5,
+        bathrooms: 4,
+        simpleDesc: "A tranquil stay in the city",
+        description: "Family-friendly mountain villa.",
+        image: "/images/villa-1.jpg",
+        descImages: descImages,
+        weekendPrice: "IDR 7.200.000",
+        weekdayPrice: "IDR 5.400.000",
+        rating: 4.8,
+        reviews: 98,
+        amenities: commonAmenities,
+        thingsToDo: "Family activities and fresh air.",
+        address: "Lembang, Bandung",
+        mapUrl: "",
+        virtualLink: "",
+        details: commonDetails,
+    },
+    {
+        id: 14,
+        name: "Hana Villa",
+        location: "Cisarua, Bandung",
+        guests: 11,
+        bedrooms: 4,
+        bathrooms: 3,
+        simpleDesc: "A tranquil stay in the city",
+        description: "Japanese-inspired calm villa.",
+        image: "/images/villa-2.jpg",
+        descImages: descImages,
+        weekendPrice: "IDR 5.300.000",
+        weekdayPrice: "IDR 4.000.000",
+        rating: 4.7,
+        reviews: 73,
+        amenities: commonAmenities,
+        thingsToDo: "Onsen-style relaxation.",
+        address: "Cisarua, Bandung",
+        mapUrl: "",
+        virtualLink: "",
+        details: commonDetails,
+    },
+    {
+        id: 15,
+        name: "Raya Estate",
+        location: "Dago, Bandung",
+        guests: 25,
+        bedrooms: 8,
+        bathrooms: 6,
+        simpleDesc: "A tranquil stay in the city",
+        description: "Luxury estate for large gatherings.",
+        image: "/images/villa-3.jpg",
+        descImages: descImages,
+        weekendPrice: "IDR 11.000.000",
+        weekdayPrice: "IDR 8.500.000",
+        rating: 4.9,
+        reviews: 140,
+        amenities: commonAmenities,
+        thingsToDo: "Events, celebrations, and retreats.",
+        address: "Dago, Bandung",
+        mapUrl: "",
+        virtualLink: "",
+        details: commonDetails,
+    },
+];

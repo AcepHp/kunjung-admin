@@ -53,7 +53,7 @@ type GroupItem = {
 
 const navigation: NavItem[] = [
     { name: "Dashboard", href: "/beranda", icon: HomeIcon, current: false },
-    { name: "Villas", href: "/villas", icon: FolderIcon, current: false },
+    { name: "Property Management", href: "/beranda/manage-property", icon: FolderIcon, current: false },
     { name: "Reservations", href: "/reservations", icon: CalendarIcon, current: false },
     {
         name: "User Management",
