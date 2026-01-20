@@ -3,13 +3,18 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { PencilSquareIcon } from '@heroicons/react/24/outline';
-import type { BrandStoryData } from '@/data/BrandStoryData';
+import { BrandStoryApiResponse } from '@/services/BrandStoryService';
 
 type Props = {
-    data: BrandStoryData;
+    data: BrandStoryApiResponse;
+    images?: { // Optional for now, as API doesn't return images yet
+        id: string;
+        url: string;
+        isActive: boolean;
+    }[];
 };
 
-export default function BrandStorySection({ data }: Props) {
+export default function BrandStorySection({ data, images = [] }: Props) {
     return (
         <section className="space-y-8">
             {/* ===== BRAND TEXT PREVIEW ===== */}
@@ -31,18 +36,17 @@ export default function BrandStorySection({ data }: Props) {
                     </span>
 
                     <h2 className="text-3xl font-bold text-gray-900">
-                        {data.headline}
+                        {data.headlineStory}
                     </h2>
 
                     <p className="text-lg italic text-gray-600">
-                        {data.subHeadline}
+                        {data.subHeadlineStory}
                     </p>
 
-                    <div className="space-y-3 text-gray-700">
-                        {data.description.map((desc, i) => (
-                            <p key={i}>{desc}</p>
-                        ))}
-                    </div>
+                    <div
+                        className="space-y-3 text-gray-700 prose prose-sm max-w-none"
+                        dangerouslySetInnerHTML={{ __html: data.descriptionStory }}
+                    />
                 </div>
             </div>
 
@@ -71,7 +75,7 @@ export default function BrandStorySection({ data }: Props) {
                         </thead>
 
                         <tbody className="divide-y divide-[#EFE3D7]">
-                            {data.images.map((img) => (
+                            {images.map((img) => (
                                 <tr
                                     key={img.id}
                                     className="hover:bg-[#FAF4EC]/50 transition"
