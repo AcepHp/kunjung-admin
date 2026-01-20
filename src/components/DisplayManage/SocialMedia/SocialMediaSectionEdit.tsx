@@ -33,22 +33,16 @@ export default function SocialMediaSectionEdit({
 
             {/* ===== FORM ===== */}
             <div className="grid grid-cols-1 gap-5">
-                {/* LABEL */}
+                {/* PLATFORM NAME (READ ONLY) */}
                 <div className="space-y-1.5">
                     <label className="text-sm font-medium text-gray-700">
-                        Label
+                        Platform
                     </label>
                     <input
                         type="text"
-                        value={form.label}
-                        onChange={(e) =>
-                            setForm({
-                                ...form,
-                                label: e.target.value,
-                            })
-                        }
-                        className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-[#7A3E2C] focus:outline-none"
-                        placeholder="Display label"
+                        value={form.name}
+                        disabled
+                        className="w-full rounded-md border border-gray-300 bg-gray-100 px-3 py-2 text-sm text-gray-600 focus:outline-none"
                     />
                 </div>
 

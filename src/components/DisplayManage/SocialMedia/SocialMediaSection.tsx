@@ -36,9 +36,6 @@ export default function SocialMediaSection({ data }: Props) {
                                 Platform
                             </th>
                             <th className="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wide text-[#8B6F56]">
-                                Label
-                            </th>
-                            <th className="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wide text-[#8B6F56]">
                                 URL
                             </th>
                             <th className="px-6 py-4 text-center text-xs font-semibold uppercase tracking-wide text-[#8B6F56]">
@@ -57,7 +54,7 @@ export default function SocialMediaSection({ data }: Props) {
                                 <td className="px-6 py-4">
                                     <div className="flex items-center gap-3">
                                         <span className="flex h-8 w-8 items-center justify-center rounded-full bg-[#F3E7DB] text-[#7A3E2C]">
-                                            {iconMap[item.name] ?? (
+                                            {iconMap[item.name.toLowerCase()] ?? (
                                                 <LinkIcon className="h-4 w-4" />
                                             )}
                                         </span>
@@ -67,10 +64,7 @@ export default function SocialMediaSection({ data }: Props) {
                                     </div>
                                 </td>
 
-                                {/* Label */}
-                                <td className="px-6 py-4 text-gray-700">
-                                    {item.label}
-                                </td>
+                                {/* URL */}
 
                                 {/* URL */}
                                 <td className="px-6 py-4 max-w-xs">
