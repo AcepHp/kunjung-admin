@@ -38,6 +38,7 @@ export default function Page() {
                 items={breadcrumbItems}
                 title="Brand Statement"
                 description="Manage the brand statement section displayed on the homepage."
+                isLoading={isLoading}
             />
 
             {isLoading ? (

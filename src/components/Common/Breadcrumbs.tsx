@@ -12,6 +12,7 @@ interface BreadCrumbsProps {
     title?: string;
     description?: string;
     className?: string;
+    isLoading?: boolean;
 }
 
 export default function BreadCrumbs({
@@ -19,7 +20,33 @@ export default function BreadCrumbs({
     title,
     description,
     className,
+    isLoading = false,
 }: BreadCrumbsProps) {
+    // 1) Skeleton Loading State
+    if (isLoading) {
+        return (
+            <div
+                className={[
+                    "flex items-center justify-between gap-3 animate-pulse",
+                    "flex-wrap",
+                    className,
+                ].join(" ")}
+            >
+                {/* Left: Breadcrumb Pill Skeleton */}
+                <div className="h-8 w-48 rounded-full bg-gray-200"></div>
+
+                {/* Right: Title/Description Skeleton */}
+                <div className="flex flex-col items-end space-y-2">
+                    <div className="h-5 w-32 rounded bg-gray-200"></div>
+                    {description && (
+                        <div className="h-3 w-48 rounded bg-gray-200"></div>
+                    )}
+                </div>
+            </div>
+        );
+    }
+
+    // 2) Normal State
     if (!items?.length) return null;
 
     const lastIndex = items.length - 1;

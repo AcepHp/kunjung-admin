@@ -61,6 +61,7 @@ export default function Page() {
                     items={breadcrumbItems}
                     title="Edit Brand Statement"
                     description="Update the brand statement content on homepage."
+                    isLoading={true}
                 />
                 <BrandStatementEditSkeleton />
             </div>
