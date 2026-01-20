@@ -1,17 +1,12 @@
-'use client';
-
 import Link from 'next/link';
-import { HeroSectionData } from '../../../data/HeroSectionData';
 import { PencilSquareIcon } from '@heroicons/react/24/outline';
+import { HeroSectionApiResponse } from '@/services/HeroSectionService';
 
 type Props = {
-    data: HeroSectionData;
-    onEdit?: () => void;
+    data: HeroSectionApiResponse;
 };
 
-export default function HeroCopywriting({ data, onEdit }: Props) {
-    const copy = data.data.heroSection.copywriting;
-
+export default function HeroCopywriting({ data }: Props) {
     return (
         <section className="rounded-2xl border border-[#E9D6C6] bg-white p-5 sm:p-6 shadow-sm">
             {/* Header */}
@@ -42,7 +37,7 @@ export default function HeroCopywriting({ data, onEdit }: Props) {
                         Headline
                     </label>
                     <p className="mt-1 text-sm sm:text-base font-semibold text-[#2E2620]">
-                        {copy.headline}
+                        {data.headline}
                     </p>
                 </div>
 
@@ -52,7 +47,7 @@ export default function HeroCopywriting({ data, onEdit }: Props) {
                         Description
                     </label>
                     <p className="mt-1 text-xs sm:text-sm leading-relaxed text-gray-700">
-                        {copy.description}
+                        {data.description}
                     </p>
                 </div>
 
@@ -62,7 +57,7 @@ export default function HeroCopywriting({ data, onEdit }: Props) {
                         Signature
                     </label>
                     <p className="mt-1 text-sm text-[#7A3E2C] italic">
-                        {copy.signature}
+                        {data.signature}
                     </p>
                 </div>
             </div>
