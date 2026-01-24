@@ -47,27 +47,38 @@ export default function Step2Gallery({
                     <h3 className="text-xl font-serif font-bold text-[#1E1E1E]">Main Cover Image</h3>
                     <p className="text-sm text-gray-500">Primary display image (16:9 ratio recommended).</p>
                     <div className="space-y-4 pt-4 border-t border-[#EFE3D7]">
-                        <label className="block text-xs font-bold tracking-widest text-[#8B6F56] uppercase">
-                            {mainPreview ? 'Change Image' : 'Select Hero Image'}
-                        </label>
-                        <input
-                            type="file"
-                            accept="image/*"
-                            onChange={handleMainImageChange}
-                            className="block w-full cursor-pointer rounded-xl border border-[#7A3E2C] bg-white px-3 py-2.5 text-sm"
-                        />
-                        {mainPreview && (
-                            <button type="button" onClick={removeMainImage} className="text-xs font-bold text-red-500 uppercase tracking-widest hover:text-red-700">Remove Image</button>
+                        <p className="text-xs font-bold tracking-widest text-[#8B6F56] uppercase">
+                            Visual Identity
+                        </p>
+                        <p className="text-sm text-gray-500 italic">
+                            {mainPreview ? "Hover over the image to change or remove it." : "Select a hero image to represent your property."}
+                        </p>
+                        {!mainPreview && (
+                            <input
+                                type="file"
+                                accept="image/*"
+                                onChange={handleMainImageChange}
+                                className="block w-full cursor-pointer rounded-xl border border-[#7A3E2C] bg-white px-3 py-2.5 text-sm"
+                            />
                         )}
                     </div>
                 </div>
-                <div className="relative aspect-video w-full overflow-hidden rounded-2xl border border-[#7A3E2C] bg-white">
+                <div className="relative group aspect-video w-full overflow-hidden rounded-2xl border border-[#7A3E2C] bg-[#FAF8F6]">
                     {mainPreview ? (
-                        <img src={mainPreview} alt="Hero" className="h-full w-full object-cover" />
+                        <>
+                            <img src={mainPreview} alt="Hero" className="h-full w-full object-cover" />
+                            <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 flex items-center justify-center gap-3 transition-all duration-300 z-10 backdrop-blur-[2px]">
+                                <label className="cursor-pointer bg-white text-[#7A3E2C] px-5 py-2.5 rounded-full text-xs font-bold shadow-xl hover:bg-[#FAF4EC] active:scale-95 transition-all">
+                                    Edit / Replace
+                                    <input type="file" className="sr-only" onChange={handleMainImageChange} accept="image/*" />
+                                </label>
+                                <button type="button" onClick={removeMainImage} className="bg-red-500 text-white px-5 py-2.5 rounded-full text-xs font-bold shadow-xl hover:bg-red-600 active:scale-95 transition-all">Remove</button>
+                            </div>
+                        </>
                     ) : (
-                        <div className="h-full flex flex-col items-center justify-center text-[#7A3E2C]/20 bg-[#FAF8F6]">
+                        <div className="h-full flex flex-col items-center justify-center text-[#7A3E2C]/20">
                             <PhotoIcon className="h-10 w-10" />
-                            <span className="text-[10px] uppercase font-bold mt-2">No Image</span>
+                            <span className="text-[10px] uppercase font-bold mt-2 tracking-widest">Awaiting Hero Image</span>
                         </div>
                     )}
                 </div>
@@ -78,45 +89,52 @@ export default function Step2Gallery({
                 <div className="border-b border-[#EFE3D7] pb-2">
                     <h3 className="text-lg font-serif font-bold text-[#1E1E1E]">Description Gallery (3 Items)</h3>
                 </div>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 h-auto md:h-[450px]">
-                    <div className="md:col-span-2 relative">
-                        {descPreviews[0] ? (
-                            <div className="relative group h-full rounded-2xl overflow-hidden border border-[#7A3E2C]">
-                                <img src={descPreviews[0]!} className="h-full w-full object-cover" />
-                                <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center gap-2">
-                                    <label className="cursor-pointer bg-white text-[#7A3E2C] px-3 py-1.5 rounded-full text-xs font-bold">Change
-                                        <input type="file" className="sr-only" onChange={(e) => handleDescImageChange(0, e)} accept="image/*" />
-                                    </label>
-                                    <button type="button" onClick={() => removeDescImage(0)} className="bg-red-500 text-white px-3 py-1.5 rounded-full text-xs font-bold">Remove</button>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    {/* Primary Large Image */}
+                    <div className="md:col-span-2">
+                        <div className="relative group aspect-[4/3] md:aspect-auto md:h-[500px] w-full rounded-2xl overflow-hidden border border-[#7A3E2C] bg-[#FAF8F6]">
+                            {descPreviews[0] ? (
+                                <>
+                                    <img src={descPreviews[0]!} className="absolute inset-0 h-full w-full object-cover" />
+                                    <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 flex items-center justify-center gap-3 transition-all duration-300 z-10 backdrop-blur-[2px]">
+                                        <label className="cursor-pointer bg-white text-[#7A3E2C] px-5 py-2.5 rounded-full text-xs font-bold shadow-xl hover:bg-[#FAF4EC] active:scale-95 transition-all">
+                                            Edit / Replace
+                                            <input type="file" className="sr-only" onChange={(e) => handleDescImageChange(0, e)} accept="image/*" />
+                                        </label>
+                                        <button type="button" onClick={() => removeDescImage(0)} className="bg-red-500 text-white px-5 py-2.5 rounded-full text-xs font-bold shadow-xl hover:bg-red-600 active:scale-95 transition-all">Remove</button>
+                                    </div>
+                                </>
+                            ) : (
+                                <div className="absolute inset-0 flex flex-col items-center justify-center border-2 border-dashed border-[#7A3E2C]/30 hover:bg-[#FAF4EC] transition-colors">
+                                    <input type="file" className="absolute inset-0 opacity-0 cursor-pointer" onChange={(e) => handleDescImageChange(0, e)} accept="image/*" />
+                                    <PhotoIcon className="h-10 w-10 text-[#7A3E2C]/40" />
+                                    <span className="text-xs font-bold text-[#7A3E2C]/60 mt-2">Upload Image 1</span>
                                 </div>
-                            </div>
-                        ) : (
-                            <div className="flex h-full items-center justify-center rounded-2xl border-2 border-dashed border-[#7A3E2C] bg-white hover:bg-[#FAF4EC] transition-colors relative">
-                                <input type="file" className="absolute inset-0 opacity-0 cursor-pointer" onChange={(e) => handleDescImageChange(0, e)} accept="image/*" />
-                                <div className="text-center">
-                                    <PhotoIcon className="h-8 w-8 text-[#7A3E2C] mx-auto" />
-                                    <span className="text-xs font-bold text-[#7A3E2C] mt-2 block">Upload Image 1</span>
-                                </div>
-                            </div>
-                        )}
+                            )}
+                        </div>
                     </div>
-                    <div className="grid grid-rows-2 gap-4">
+
+                    {/* Secondary Stacked Images */}
+                    <div className="grid grid-cols-2 md:grid-cols-1 gap-6">
                         {[1, 2].map(idx => (
-                            <div key={idx} className="relative">
+                            <div key={idx} className="relative group aspect-square md:aspect-auto md:h-[238px] w-full rounded-xl overflow-hidden border border-[#7A3E2C] bg-[#FAF8F6]">
                                 {descPreviews[idx] ? (
-                                    <div className="relative group h-full rounded-xl overflow-hidden border border-[#7A3E2C]">
-                                        <img src={descPreviews[idx]!} className="h-full w-full object-cover" />
-                                        <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center gap-2">
-                                            <label className="cursor-pointer bg-white text-[#7A3E2C] px-2 py-1 rounded-full text-[10px] font-bold">Change
+                                    <>
+                                        <img src={descPreviews[idx]!} className="absolute inset-0 h-full w-full object-cover" />
+                                        <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 flex items-center justify-center gap-2 transition-all duration-300 z-10 backdrop-blur-[2px]">
+                                            <label className="cursor-pointer bg-white text-[#7A3E2C] px-2 py-2 rounded-full text-[10px] font-bold shadow-xl hover:bg-[#FAF4EC] active:scale-90 transition-all">
+                                                Edit / Replace
                                                 <input type="file" className="sr-only" onChange={(e) => handleDescImageChange(idx, e)} accept="image/*" />
                                             </label>
-                                            <button type="button" onClick={() => removeDescImage(idx)} className="bg-red-500 text-white px-2 py-1 rounded-full text-[10px] font-bold">Remove</button>
+                                            <button type="button" onClick={() => removeDescImage(idx)} className="bg-red-500 text-white px-2 py-2 rounded-full text-[10px] font-bold shadow-xl hover:bg-red-600 active:scale-90 transition-all">
+                                                Remove
+                                            </button>
                                         </div>
-                                    </div>
+                                    </>
                                 ) : (
-                                    <div className="flex h-full items-center justify-center rounded-xl border-2 border-dashed border-[#7A3E2C] bg-white hover:bg-[#FAF4EC] transition-colors relative">
+                                    <div className="absolute inset-0 flex items-center justify-center border-2 border-dashed border-[#7A3E2C]/30 hover:bg-[#FAF4EC] transition-colors">
                                         <input type="file" className="absolute inset-0 opacity-0 cursor-pointer" onChange={(e) => handleDescImageChange(idx, e)} accept="image/*" />
-                                        <PhotoIcon className="h-6 w-6 text-[#7A3E2C]" />
+                                        <PhotoIcon className="h-6 w-6 text-[#7A3E2C]/40" />
                                     </div>
                                 )}
                             </div>

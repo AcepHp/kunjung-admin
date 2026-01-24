@@ -1,8 +1,8 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import dynamic from 'next/dynamic';
-import { CheckIcon } from '@heroicons/react/24/outline';
+import { CheckIcon, PlusIcon, XMarkIcon } from '@heroicons/react/24/outline';
 
 const MapPicker = dynamic(() => import('./MapPicker'), {
     ssr: false,
@@ -13,23 +13,7 @@ const MapPicker = dynamic(() => import('./MapPicker'), {
     )
 });
 
-const amenitiesList = [
-    "Hot tub",
-    "TV",
-    "Exterior security cameras on property",
-    "Kitchen",
-    "Free parking on premises",
-    "Wifi",
-    "Dedicated workspace",
-    "Air conditioning",
-    "Smoke alarm",
-    "Pool",
-    "Washer",
-    "Dryer",
-    "Heating",
-    "First aid kit",
-    "Fire extinguisher"
-];
+import { categorizedAmenities } from '@/data/amenities';
 
 interface Step3PhysicalDetailsProps {
     formData: any;
@@ -50,6 +34,33 @@ export default function Step3PhysicalDetails({
     handleChange,
     setFormData
 }: Step3PhysicalDetailsProps) {
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [newItem, setNewItem] = useState({ name: '', category: categorizedAmenities[0].category });
+
+    // Track amenities added via the modal
+    const [extraAmenities, setExtraAmenities] = useState<{ name: string, category: string }[]>([]);
+
+    const handleAddAmenity = () => {
+        if (!newItem.name.trim()) return;
+
+        // Add to our local list of extra amenities
+        setExtraAmenities(prev => [...prev, { ...newItem }]);
+
+        // Ensure it is toggled as selected
+        if (!selectedAmenities.includes(newItem.name)) {
+            handleAmenityToggle(newItem.name);
+        }
+
+        // Reset and close
+        setNewItem({ name: '', category: categorizedAmenities[0].category });
+        setIsModalOpen(false);
+    };
+
+    // Helper to find which selected amenities are NOT in the master list AND NOT in our categorized extras
+    const masterItems = new Set(categorizedAmenities.flatMap(c => c.items));
+    const extraItems = new Set(extraAmenities.map(e => e.name));
+    const trulyCustomAmenities = selectedAmenities.filter(a => !masterItems.has(a) && !extraItems.has(a));
+
     return (
         <div className="space-y-10 animate-in fade-in slide-in-from-right-4 duration-500">
             <div className="text-center mb-6">
@@ -58,7 +69,7 @@ export default function Step3PhysicalDetails({
             </div>
 
             <div className="grid grid-cols-1 gap-8">
-                {/* Location Section - Full Width with Preview */}
+                {/* Location Section */}
                 <div className="bg-[#FAF4EC]/20 p-8 rounded-3xl border border-[#E9D6C6]/40 space-y-6">
                     <h3 className="text-xl font-serif font-bold text-[#1E1E1E]">Location & Structure</h3>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -103,12 +114,11 @@ export default function Step3PhysicalDetails({
                                     placeholder="https://www.google.com/maps/embed?..."
                                     className="mt-1 block w-full rounded-xl border border-[#7A3E2C] px-4 py-3 text-[#1E1E1E] sm:text-xs font-mono shadow-sm focus:ring-1 focus:ring-[#7A3E2C] outline-none transition-all"
                                 />
-                                <p className="text-[10px] text-gray-400 mt-1 italic">The map will auto-update or you can type/paste a custom embed link.</p>
                             </div>
                         </div>
 
-                        {/* Maps Preview - Interactive Leaflet Map */}
-                        <div className="relative h-full min-h-[400px] rounded-2xl overflow-hidden border border-[#7A3E2C] bg-white shadow-xl group">
+                        {/* Maps Preview */}
+                        <div className="relative h-full min-h-[300px] rounded-2xl overflow-hidden border border-[#7A3E2C] bg-white shadow-xl group">
                             <MapPicker
                                 address={formData.address}
                                 onAddressChange={handleAddressChange}
@@ -161,71 +171,77 @@ export default function Step3PhysicalDetails({
                 </div>
 
                 {/* Amenities Section */}
-                <div className="bg-[#FAF4EC]/20 p-8 rounded-3xl border border-[#E9D6C6]/40 space-y-8">
+                <div className="bg-[#FAF4EC]/20 p-8 rounded-3xl border border-[#E9D6C6]/40 space-y-10">
                     <div className="flex flex-col md:flex-row md:items-center justify-between border-b border-[#EFE3D7] pb-6 gap-6">
                         <div className="space-y-1">
                             <h3 className="text-xl font-serif font-bold text-[#1E1E1E]">Amenities & Facilities</h3>
-                            <p className="text-sm text-gray-500">Select standard amenities or add your own.</p>
+                            <p className="text-sm text-gray-500">Pick from our master list or add a custom facility.</p>
                         </div>
 
-                        <div className="flex items-center gap-3">
-                            <div className="relative group flex-1 md:w-64">
-                                <input
-                                    type="text"
-                                    id="custom-amenity-input"
-                                    placeholder="Add custom amenity..."
-                                    className="w-full rounded-xl border border-[#E9D6C6] bg-white px-4 py-2.5 text-sm outline-none focus:border-[#7A3E2C] transition-all"
-                                    onKeyDown={(e) => {
-                                        if (e.key === 'Enter') {
-                                            e.preventDefault();
-                                            const input = e.currentTarget;
-                                            const val = input.value.trim();
-                                            if (val) {
-                                                handleAmenityToggle(val);
-                                                input.value = '';
-                                            }
-                                        }
-                                    }}
-                                />
-                            </div>
-                            <button
-                                type="button"
-                                onClick={() => {
-                                    const input = document.getElementById('custom-amenity-input') as HTMLInputElement;
-                                    const val = input?.value.trim();
-                                    if (val) {
-                                        handleAmenityToggle(val);
-                                        input.value = '';
-                                    }
-                                }}
-                                className="bg-[#7A3E2C] text-white px-5 py-2.5 rounded-xl text-sm font-bold hover:bg-[#5C2D20] transition-colors shadow-sm active:scale-95"
-                            >
-                                Add
-                            </button>
-                        </div>
+                        <button
+                            type="button"
+                            onClick={() => setIsModalOpen(true)}
+                            className="inline-flex items-center gap-2 bg-[#7A3E2C] text-white px-6 py-2.5 rounded-xl text-sm font-bold hover:bg-[#5C2D20] transition-all shadow-md active:scale-95"
+                        >
+                            <PlusIcon className="h-4 w-4" />
+                            Add Amenity
+                        </button>
                     </div>
 
-                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
-                        {/* Combine predefined list with any custom ones in selectedAmenities not in the list */}
-                        {Array.from(new Set([...amenitiesList, ...selectedAmenities])).map((a) => (
-                            <div
-                                key={a}
-                                onClick={() => handleAmenityToggle(a)}
-                                className={`group relative p-4 rounded-2xl border cursor-pointer text-xs transition-all duration-300 flex flex-col items-center justify-center text-center gap-2 min-h-[80px] ${selectedAmenities.includes(a)
-                                    ? 'border-[#7A3E2C] bg-white shadow-md'
-                                    : 'border-[#E9D6C6]/60 bg-white/40 hover:border-[#7A3E2C]/50 hover:bg-white'
-                                    }`}
-                            >
-                                {selectedAmenities.includes(a) && (
-                                    <div className="absolute top-2 right-2">
-                                        <CheckIcon className="h-4 w-4 text-[#7A3E2C]" />
+                    <div className="space-y-12">
+                        {categorizedAmenities.map((cat) => {
+                            // Merge master items with custom ones added to this category
+                            const currentCategoryExtras = extraAmenities.filter(e => e.category === cat.category).map(e => e.name);
+                            const allItems = [...cat.items, ...currentCategoryExtras];
+
+                            return (
+                                <div key={cat.category} className="space-y-4">
+                                    <div className="flex items-center gap-2 text-[#7A3E2C]">
+                                        <h4 className="text-sm font-bold uppercase tracking-wider">{cat.category}</h4>
                                     </div>
-                                )}
-                                <span className={`font-semibold ${selectedAmenities.includes(a) ? 'text-[#7A3E2C]' : 'text-gray-600 group-hover:text-[#1E1E1E]'}`}>
-                                    {a}
-                                </span>
+                                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3">
+                                        {allItems.map((item) => (
+                                            <button
+                                                key={item}
+                                                type="button"
+                                                onClick={() => handleAmenityToggle(item)}
+                                                className={`p-3 text-left rounded-xl border transition-all duration-200 flex items-center justify-between text-xs gap-2 min-h-[48px] ${selectedAmenities.includes(item)
+                                                    ? 'border-[#7A3E2C] bg-[#FAF4EC] text-[#7A3E2C] font-bold shadow-sm'
+                                                    : 'border-[#E9D6C6]/60 bg-white text-gray-600 hover:border-[#7A3E2C]/30 hover:bg-[#FAF8F6]'
+                                                    }`}
+                                            >
+                                                <span className="flex-1">{item}</span>
+                                                {selectedAmenities.includes(item) && (
+                                                    <CheckIcon className="h-4 w-4 shrink-0" />
+                                                )}
+                                            </button>
+                                        ))}
+                                    </div>
+                                </div>
+                            );
+                        })}
+
+                        {/* Custom Amenities Section */}
+                        {trulyCustomAmenities.length > 0 && (
+                            <div className="space-y-4">
+                                <div className="flex items-center gap-2 text-[#7A3E2C]">
+                                    <h4 className="text-sm font-bold uppercase tracking-wider">Other Amenities</h4>
+                                </div>
+                                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3">
+                                    {trulyCustomAmenities.map((item) => (
+                                        <button
+                                            key={item}
+                                            type="button"
+                                            onClick={() => handleAmenityToggle(item)}
+                                            className="p-3 text-left rounded-xl border border-[#7A3E2C] bg-[#FAF4EC] text-[#7A3E2C] font-bold shadow-sm flex items-center justify-between text-xs gap-2 min-h-[48px]"
+                                        >
+                                            <span className="flex-1">{item}</span>
+                                            <CheckIcon className="h-4 w-4 shrink-0" />
+                                        </button>
+                                    ))}
+                                </div>
                             </div>
-                        ))}
+                        )}
                     </div>
                 </div>
 
@@ -247,7 +263,8 @@ export default function Step3PhysicalDetails({
                         <p className="text-[10px] text-gray-400 mt-1 italic">Showcase your property with an interactive 360° virtual tour or Matterport link.</p>
                     </div>
                 </div>
-                {/* Neighborhood / Things To Do Section */}
+
+                {/* Neighborhood Section */}
                 <div className="bg-[#FAF4EC]/30 p-8 rounded-3xl border border-[#E9D6C6]/40 space-y-6">
                     <div className="flex items-center gap-3 border-b border-[#E9D6C6]/40 pb-4">
                         <h3 className="text-xl font-serif font-bold text-[#1E1E1E]">Neighborhood & Activities</h3>
@@ -266,6 +283,71 @@ export default function Step3PhysicalDetails({
                     </div>
                 </div>
             </div>
+
+            {/* Add Amenity Modal */}
+            {isModalOpen && (
+                <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+                    <div className="bg-white w-full max-w-2xl rounded-3xl shadow-2xl overflow-hidden">
+                        <div className="p-8 space-y-6">
+                            <div className="flex items-center justify-between">
+                                <h3 className="text-xl font-serif font-bold text-[#1E1E1E]">Add New Amenity</h3>
+                                <button
+                                    onClick={() => setIsModalOpen(false)}
+                                    className="p-1 rounded-full hover:bg-gray-100 transition-colors"
+                                >
+                                    <XMarkIcon className="h-6 w-6 text-gray-400" />
+                                </button>
+                            </div>
+
+                            <div className="space-y-4 text-left">
+                                <div className="space-y-2">
+                                    <label className="block text-xs font-bold text-[#8B6F56] uppercase tracking-widest">Category</label>
+                                    <select
+                                        value={newItem.category}
+                                        onChange={(e) => setNewItem(prev => ({ ...prev, category: e.target.value }))}
+                                        className="w-full rounded-xl border border-[#E9D6C6] bg-white px-4 py-3 text-sm focus:border-[#7A3E2C] outline-none transition-all"
+                                    >
+                                        {categorizedAmenities.map(c => (
+                                            <option key={c.category} value={c.category}>{c.category}</option>
+                                        ))}
+                                        <option value="Custom">Custom / Other</option>
+                                    </select>
+                                </div>
+
+                                <div className="space-y-2">
+                                    <label className="block text-xs font-bold text-[#8B6F56] uppercase tracking-widest">Amenity Name</label>
+                                    <input
+                                        type="text"
+                                        placeholder="e.g. 5G Satellite Internet"
+                                        value={newItem.name}
+                                        onChange={(e) => setNewItem(prev => ({ ...prev, name: e.target.value }))}
+                                        onKeyDown={(e) => e.key === 'Enter' && handleAddAmenity()}
+                                        className="w-full rounded-xl border border-[#E9D6C6] bg-white px-4 py-3 text-sm focus:border-[#7A3E2C] outline-none transition-all"
+                                        autoFocus
+                                    />
+                                </div>
+                            </div>
+
+                            <div className="flex gap-3 pt-4">
+                                <button
+                                    type="button"
+                                    onClick={() => setIsModalOpen(false)}
+                                    className="flex-1 px-6 py-3 rounded-xl border border-gray-200 text-sm font-bold text-gray-600 hover:bg-gray-50 transition-all"
+                                >
+                                    Cancel
+                                </button>
+                                <button
+                                    type="button"
+                                    onClick={handleAddAmenity}
+                                    className="flex-1 px-6 py-3 rounded-xl bg-[#7A3E2C] text-white text-sm font-bold hover:bg-[#5C2D20] transition-all shadow-md active:scale-95"
+                                >
+                                    Add Amenity
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }

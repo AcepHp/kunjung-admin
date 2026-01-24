@@ -15,6 +15,40 @@ type Discount = {
     appliesTo?: "weekday" | "weekend" | "both";
 };
 
+export type VillaCategory = {
+    id: 'stay' | 'event' | 'shoot';
+    name: string;
+    subCategory?: string;
+    item?: string | any;
+};
+
+type Policy = {
+    refund100: string;
+    refund50: string;
+    nonRefundable: string;
+    reschedule: string;
+};
+
+type HouseRules = {
+    checkInTime: string;
+    checkOutTime: string;
+    selfCheckIn: string;
+    maxGuests: string;
+    petsAllowed: string;
+    quietHours: string;
+    commercialPhotography: string;
+    smokingAllowed: string;
+    additionalRules: string[];
+    beforeLeave: string[];
+    additionalRequests: string[];
+};
+
+type SafetyDevice = {
+    type: string;
+    status: 'present' | 'absent' | 'optional';
+    description?: string;
+};
+
 type Villa = {
     id: number;
     name: string;
@@ -36,6 +70,10 @@ type Villa = {
     mapUrl: string;
 
     discount?: Discount; // ✅ TAMBAHAN
+    category: VillaCategory; // ✅ NEW
+    policy?: Policy; // ✅ NEW
+    houseRules?: HouseRules; // ✅ NEW
+    safetyDevices?: SafetyDevice[]; // ✅ NEW
 
     detailHeader?: string;
     virtualLink?: string;
@@ -142,6 +180,7 @@ export const villas: Villa[] = [
         mapUrl:
             "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d37412.68649029256!2d107.52984755674326!3d-6.8706829513027525!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e68e4559bd023cd%3A0xb21724a94d165f8!2sJenderal%20Achmad%20Yani%20University!5e1!3m2!1sen!2sid!4v1758353571428!5m2!1sen!2sid",
         virtualLink: "",
+        category: { id: 'stay', name: 'Stay' },
 
         detailHeader:
             "First impressions have meaning for the future. The unique of Silas House look’s expected to be remembered in a good way. It’s great to catch Silas house iconic facade.",
@@ -208,6 +247,7 @@ export const villas: Villa[] = [
         mapUrl:
             "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3955.01!2d107.59!3d-6.84",
         virtualLink: "",
+        category: { id: 'stay', name: 'Stay' },
 
         detailHeader:
             "First impressions have meaning for the future. The unique of Montri House look’s expected to be remembered in a good way.",
@@ -254,6 +294,7 @@ export const villas: Villa[] = [
         mapUrl:
             "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3954.99!2d107.61!3d-6.82",
         virtualLink: "",
+        category: { id: 'stay', name: 'Stay' },
 
         detailHeader:
             "First impressions have meaning for the future. The unique of Gemala House look’s expected to be remembered in a good way.",
@@ -300,6 +341,7 @@ export const villas: Villa[] = [
         mapUrl:
             "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3955.00!2d107.57!3d-6.85",
         virtualLink: "",
+        category: { id: 'stay', name: 'Stay' },
 
         detailHeader:
             "First impressions have meaning for the future. The unique of Padri House look’s expected to be remembered in a good way.",
@@ -346,6 +388,7 @@ export const villas: Villa[] = [
         mapUrl:
             "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3955.02!2d107.62!3d-6.87",
         virtualLink: "",
+        category: { id: 'stay', name: 'Stay' },
 
         detailHeader:
             "First impressions have meaning for the future. The unique of Atma House look’s expected to be remembered in a good way.",
@@ -392,6 +435,8 @@ export const villas: Villa[] = [
         mapUrl:
             "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3955.03!2d107.55!3d-6.89",
         virtualLink: "",
+        category: { id: 'stay', name: 'Stay' },
+
         detailHeader:
             "First impressions have meaning for the future. The unique of Nusa Villa look’s expected to be remembered in a good way.",
         details: [
@@ -421,6 +466,7 @@ export const villas: Villa[] = [
         address: "Ciumbuleuit, Bandung",
         mapUrl: "",
         virtualLink: "",
+        category: { id: 'stay', name: 'Stay' },
         details: commonDetails,
     },
     {
@@ -443,6 +489,7 @@ export const villas: Villa[] = [
         address: "Lembang, Bandung",
         mapUrl: "",
         virtualLink: "",
+        category: { id: 'stay', name: 'Stay' },
         details: commonDetails,
     },
     {
@@ -465,6 +512,7 @@ export const villas: Villa[] = [
         address: "Dago Atas, Bandung",
         mapUrl: "",
         virtualLink: "",
+        category: { id: 'stay', name: 'Stay' },
         details: commonDetails,
     },
     {
@@ -487,6 +535,7 @@ export const villas: Villa[] = [
         address: "Parompong, Bandung",
         mapUrl: "",
         virtualLink: "",
+        category: { id: 'stay', name: 'Stay' },
         details: commonDetails,
     },
     {
@@ -509,6 +558,7 @@ export const villas: Villa[] = [
         address: "Punclut, Bandung",
         mapUrl: "",
         virtualLink: "",
+        category: { id: 'stay', name: 'Stay' },
         details: commonDetails,
     },
     {
@@ -531,6 +581,7 @@ export const villas: Villa[] = [
         address: "Dago Pakar, Bandung",
         mapUrl: "",
         virtualLink: "",
+        category: { id: 'stay', name: 'Stay' },
         details: commonDetails,
     },
     {
@@ -553,6 +604,7 @@ export const villas: Villa[] = [
         address: "Lembang, Bandung",
         mapUrl: "",
         virtualLink: "",
+        category: { id: 'stay', name: 'Stay' },
         details: commonDetails,
     },
     {
@@ -575,6 +627,7 @@ export const villas: Villa[] = [
         address: "Cisarua, Bandung",
         mapUrl: "",
         virtualLink: "",
+        category: { id: 'stay', name: 'Stay' },
         details: commonDetails,
     },
     {
@@ -597,6 +650,7 @@ export const villas: Villa[] = [
         address: "Dago, Bandung",
         mapUrl: "",
         virtualLink: "",
+        category: { id: 'stay', name: 'Stay' },
         details: commonDetails,
     },
 ];

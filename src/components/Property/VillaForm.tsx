@@ -2,21 +2,41 @@
 
 import { useState, useCallback, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import {
+    HomeIcon,
+    CalendarDaysIcon,
+    CameraIcon,
+    ChevronRightIcon
+} from '@heroicons/react/24/outline';
 
 // Import modular step components
 import Step1GeneralInfo from './Step1GeneralInfo';
 import Step2Gallery from './Step2Gallery';
 import Step3PhysicalDetails from './Step3PhysicalDetails';
 import Step4Pricing from './Step4Pricing';
+import Step5Policies from './Step5Policies';
+import Step6HouseRules from './Step6HouseRules';
+import Step7SafetyProperty from './Step7SafetyProperty';
 
 const steps = [
     { id: 1, name: 'General Info' },
     { id: 2, name: 'Gallery' },
     { id: 3, name: 'Details' },
     { id: 4, name: 'Pricing' },
+    { id: 5, name: 'Policies' },
+    { id: 6, name: 'House Rules' },
+    { id: 7, name: 'Safety' },
 ];
 
-export default function VillaForm({ initialData = null }: { initialData?: any }) {
+export default function VillaForm({
+    initialData = null,
+    initialCategory = null,
+    onBack
+}: {
+    initialData?: any;
+    initialCategory?: any;
+    onBack?: () => void;
+}) {
     const router = useRouter();
     const [loading, setLoading] = useState(false);
 
@@ -63,8 +83,38 @@ export default function VillaForm({ initialData = null }: { initialData?: any })
         descImages: initialData?.descImages || ['', '', ''], // 3 Description images
         detailHeader: initialData?.detailHeader || '', // Detail Header intro
         virtualLink: initialData?.virtualLink || '', // Virtual Tour Link
-        thingsToDo: initialData?.thingsToDo || '', // Things to do / Neighborhood
+        // Flatten category if coming from CategorySelection (which has a nested structure)
+        category: initialData?.category || (initialCategory?.category ? {
+            id: initialCategory.category.id,
+            name: initialCategory.category.name,
+            subCategory: initialCategory.subCategory,
+            item: initialCategory.item
+        } : initialCategory) || { id: 'stay', name: 'Stay' },
         details: initialData?.details || [{ title: '', description: '', images: [] }], // Dynamic details fallback
+        policy: initialData?.policy || {
+            refund100: '',
+            refund50: '',
+            nonRefundable: '',
+            reschedule: '',
+        },
+        houseRules: initialData?.houseRules || {
+            checkInTime: '',
+            checkOutTime: '',
+            selfCheckIn: '',
+            maxGuests: '',
+            petsAllowed: '',
+            quietHours: '',
+            commercialPhotography: '',
+            smokingAllowed: '',
+            additionalRules: [],
+            beforeLeave: [],
+            additionalRequests: [],
+        },
+        safetyDevices: initialData?.safetyDevices || [
+            { type: 'Exterior security cameras on property', status: 'absent', description: '' },
+            { type: 'No carbon monoxide alarm', status: 'absent', description: '' },
+            { type: 'No smoke alarm', status: 'absent', description: '' },
+        ],
     });
 
     // State for local image previews
@@ -248,6 +298,10 @@ export default function VillaForm({ initialData = null }: { initialData?: any })
     };
 
     const handleBack = () => {
+        if (currentStep === 1 && onBack) {
+            onBack();
+            return;
+        }
         setCurrentStep((prev) => Math.max(prev - 1, 1));
         window.scrollTo(0, 0);
     };
@@ -283,12 +337,45 @@ export default function VillaForm({ initialData = null }: { initialData?: any })
                 </ol>
             </nav>
 
+            {/* Category Banner */}
+            <div className="mb-10 flex items-center justify-between p-4 rounded-2xl bg-[#FAF4EC]/50 border border-[#E9D6C6]/40">
+                <div className="flex items-center gap-3">
+
+                    <div className="flex items-center gap-2 text-sm">
+                        <span className="font-bold text-[#1E1E1E]">{formData.category.name}</span>
+                        {formData.category.subCategory && (
+                            <>
+                                <span className="text-gray-300">/</span>
+                                <span className="text-gray-600 font-medium">{formData.category.subCategory}</span>
+                            </>
+                        )}
+                        {formData.category.item && (
+                            <>
+                                <span className="text-gray-300">/</span>
+                                <span className="text-[#7A3E2C] font-semibold">
+                                    {typeof formData.category.item === 'string' ? formData.category.item : formData.category.item.name}
+                                </span>
+                            </>
+                        )}
+                    </div>
+                </div>
+                {onBack && currentStep === 1 && (
+                    <button
+                        onClick={onBack}
+                        className="text-xs font-bold text-[#7A3E2C] hover:text-[#5C2D20] transition-colors"
+                    >
+                        Change
+                    </button>
+                )}
+            </div>
+
             <form onSubmit={(e) => e.preventDefault()} onKeyDown={handleKeyDown} className="space-y-10">
 
                 {currentStep === 1 && (
                     <Step1GeneralInfo
                         formData={formData}
                         handleChange={handleChange}
+                        setFormData={setFormData}
                     />
                 )}
 
@@ -330,11 +417,34 @@ export default function VillaForm({ initialData = null }: { initialData?: any })
                     />
                 )}
 
+                {currentStep === 5 && (
+                    <Step5Policies
+                        formData={formData}
+                        handleChange={handleChange}
+                        setFormData={setFormData}
+                    />
+                )}
+
+                {currentStep === 6 && (
+                    <Step6HouseRules
+                        formData={formData}
+                        handleChange={handleChange}
+                        setFormData={setFormData}
+                    />
+                )}
+
+                {currentStep === 7 && (
+                    <Step7SafetyProperty
+                        formData={formData}
+                        setFormData={setFormData}
+                    />
+                )}
+
                 {/* Form Actions */}
                 <div className="flex items-center justify-between border-t border-[#EFE3D7]/60 pt-8 mt-4">
                     {/* Back Button */}
                     <div>
-                        {currentStep > 1 && (
+                        {(currentStep > 1 || onBack) && (
                             <button
                                 type="button"
                                 onClick={handleBack}

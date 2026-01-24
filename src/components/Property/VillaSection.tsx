@@ -158,6 +158,9 @@ export default function VillaSection() {
                             <th className="px-6 py-3 text-left text-xs font-semibold uppercase text-[#8B6F56]">
                                 Property Info
                             </th>
+                            <th className="px-6 py-3 text-left text-xs font-semibold uppercase text-[#8B6F56]">
+                                Category
+                            </th>
                             <th
                                 className="px-6 py-3 text-left text-xs font-semibold uppercase text-[#8B6F56] cursor-pointer hover:text-[#7A3E2C]"
                                 onClick={() => handleSort('location')}
@@ -216,6 +219,12 @@ export default function VillaSection() {
                                     </div>
                                 </td>
 
+                                <td className="px-6 py-4">
+                                    <span className="inline-flex items-center rounded-full bg-[#FAF4EC] px-2.5 py-0.5 text-xs font-medium text-[#7A3E2C]">
+                                        {villa.category.name}
+                                    </span>
+                                </td>
+
                                 <td className="px-6 py-4 text-[#1E1E1E]">
                                     {villa.location}
                                 </td>
@@ -241,7 +250,7 @@ export default function VillaSection() {
 
                                 <td className="px-6 py-4">
                                     <div className="flex justify-center gap-2">
-                                    
+
 
                                         <Link href={`/beranda/manage-property/edit/${villa.id}`}>
                                             <button className="inline-flex items-center gap-1.5 rounded-md border border-[#E2C9B4] px-3 py-1.5 text-xs text-[#7A3E2C] hover:bg-[#F7EBE1]">
