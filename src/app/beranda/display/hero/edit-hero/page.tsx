@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { heroSectionDummy } from '@/data/HeroSectionData';
 import BreadCrumbs, {
     BreadCrumbItem,
 } from '@/components/Common/Breadcrumbs';
@@ -19,9 +20,19 @@ export default function EditHeroPage() {
         const fetchData = async () => {
             try {
                 const data = await getHeroSection();
+                if (!data) {
+                    throw new Error("No data found");
+                }
                 setHeroData(data);
             } catch (error) {
-                console.error("Failed to fetch hero data:", error);
+                console.warn("Failed to fetch hero data from API, using fallback data:", error);
+                const fallbackData: HeroSectionApiResponse = {
+                    id: 'fallback-id',
+                    headline: heroSectionDummy.data.heroSection.copywriting.headline,
+                    description: heroSectionDummy.data.heroSection.copywriting.description,
+                    signature: heroSectionDummy.data.heroSection.copywriting.signature,
+                };
+                setHeroData(fallbackData);
             } finally {
                 setIsLoading(false);
             }
@@ -82,6 +93,14 @@ export default function EditHeroPage() {
                 onCancel={() => router.back()}
                 onSave={handleSave}
             />
+
+            {isSaving && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/20 backdrop-blur-sm">
+                    <div className="rounded-xl bg-white p-6 shadow-xl">
+                        <p className="text-sm font-semibold text-[#7A3E2C]">Saving...</p>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }

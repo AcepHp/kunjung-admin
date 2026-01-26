@@ -28,6 +28,16 @@ export const getHeroSection = async (): Promise<HeroSectionApiResponse> => {
     }
 };
 
+export const createHeroSection = async (payload: UpdateHeroSectionPayload): Promise<void> => {
+    try {
+        console.log(`Creating hero section: /dashboard/hero-section`, payload);
+        await axios.post(`/dashboard/hero-section`, payload);
+    } catch (error) {
+        console.error("Error creating hero section:", error);
+        throw error;
+    }
+};
+
 export const updateHeroSection = async (id: string, payload: UpdateHeroSectionPayload): Promise<void> => {
     try {
         console.log(`Updating hero section: /dashboard/hero-section/${id}`, payload);

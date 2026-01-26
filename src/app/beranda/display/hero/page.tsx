@@ -13,6 +13,7 @@ import { getHeroSection, HeroSectionApiResponse } from "@/services/HeroSectionSe
 export default function Page() {
     const [heroData, setHeroData] = useState<HeroSectionApiResponse | null>(null);
     const [isLoading, setIsLoading] = useState(true);
+    const [isDataEmpty, setIsDataEmpty] = useState(false);
 
     const breadcrumbItems: BreadCrumbItem[] = [
         { name: "Home", href: "/beranda" },
@@ -21,11 +22,26 @@ export default function Page() {
 
     useEffect(() => {
         const fetchData = async () => {
+            const fallbackData: HeroSectionApiResponse = {
+                id: 'fallback-id',
+                headline: heroSectionDummy.data.heroSection.copywriting.headline,
+                description: heroSectionDummy.data.heroSection.copywriting.description,
+                signature: heroSectionDummy.data.heroSection.copywriting.signature,
+            };
+
             try {
                 const data = await getHeroSection();
-                setHeroData(data);
+                if (!data) {
+                    setHeroData(fallbackData);
+                    setIsDataEmpty(true);
+                } else {
+                    setHeroData(data);
+                    setIsDataEmpty(false);
+                }
             } catch (error) {
-                console.error("Failed to fetch hero section:", error);
+                console.warn("Failed to fetch hero section from API, using fallback data:", error);
+                setHeroData(fallbackData);
+                setIsDataEmpty(true);
             } finally {
                 setIsLoading(false);
             }
@@ -44,10 +60,8 @@ export default function Page() {
 
             {isLoading ? (
                 <HeroCopywritingSkeleton />
-            ) : heroData ? (
-                <HeroCopywriting data={heroData} />
-            ) : (
-                <div className="text-gray-500">Failed to load hero data.</div>
+            ) : heroData && (
+                <HeroCopywriting data={heroData} isEmpty={isDataEmpty} />
             )}
 
             <HeroTable slides={heroSectionDummy.data.heroSection.slides} />

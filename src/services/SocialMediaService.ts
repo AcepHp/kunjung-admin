@@ -36,3 +36,14 @@ export const updateSocialMedia = async (id: string, payload: UpdateSocialMediaPa
         throw error;
     }
 };
+
+export const createSocialMedia = async (payload: UpdateSocialMediaPayload): Promise<void> => {
+    try {
+        console.log(`Creating social media: /dashboard/social-media`, payload);
+        await axios.post(`/dashboard/social-media`, payload);
+    } catch (error) {
+        console.error("Error creating social media:", error);
+        throw error;
+    }
+};
+

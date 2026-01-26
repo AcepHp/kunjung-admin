@@ -24,7 +24,8 @@ export default function Page() {
                 const apiData = await getBrandStory();
                 setData(apiData);
             } catch (error) {
-                console.error('Failed to fetch brand story:', error);
+                console.warn('Failed to fetch brand story from API:', error);
+                setData(null);
             } finally {
                 setIsLoading(false);
             }
@@ -43,11 +44,8 @@ export default function Page() {
 
             {isLoading ? (
                 <BrandStorySkeleton />
-            ) : data ? (
-                // Passing dummy images data separately as API doesn't support images yet
-                <BrandStorySection data={data} images={brandStoryData.images} />
             ) : (
-                <div className="text-red-500">Failed to load brand story.</div>
+                <BrandStorySection data={data} images={brandStoryData.images} />
             )}
         </div>
     );

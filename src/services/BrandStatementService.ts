@@ -39,3 +39,14 @@ export const updateBrandStatement = async (id: string, payload: UpdateBrandState
         throw error;
     }
 };
+
+export const createBrandStatement = async (payload: UpdateBrandStatementPayload): Promise<void> => {
+    try {
+        console.log(`Creating brand statement: /dashboard/brand-statement`, payload);
+        await axios.post(`/dashboard/brand-statement`, payload);
+    } catch (error) {
+        console.error("Error creating brand statement:", error);
+        throw error;
+    }
+};
+

@@ -83,13 +83,8 @@ export default function VillaForm({
         descImages: initialData?.descImages || ['', '', ''], // 3 Description images
         detailHeader: initialData?.detailHeader || '', // Detail Header intro
         virtualLink: initialData?.virtualLink || '', // Virtual Tour Link
-        // Flatten category if coming from CategorySelection (which has a nested structure)
-        category: initialData?.category || (initialCategory?.category ? {
-            id: initialCategory.category.id,
-            name: initialCategory.category.name,
-            subCategory: initialCategory.subCategory,
-            item: initialCategory.item
-        } : initialCategory) || { id: 'stay', name: 'Stay' },
+        // Support multiple categories
+        categories: initialData?.categories || (initialCategory ? [initialCategory] : []),
         details: initialData?.details || [{ title: '', description: '', images: [] }], // Dynamic details fallback
         policy: initialData?.policy || {
             refund100: '',
@@ -283,7 +278,7 @@ export default function VillaForm({
     /* ================= WIZARD NAVIGATION ================= */
     const isStepValid = () => {
         if (currentStep === 1) {
-            return formData.name && formData.location && formData.simpleDesc && formData.description;
+            return formData.name && formData.location && formData.simpleDesc && formData.description && formData.categories.length > 0;
         }
         return true;
     };
@@ -293,7 +288,7 @@ export default function VillaForm({
             setCurrentStep((prev) => Math.min(prev + 1, steps.length));
             window.scrollTo(0, 0);
         } else {
-            alert('Please fill in all required fields.');
+            alert('Please fill in all required fields and select at least one category.');
         }
     };
 
@@ -337,37 +332,8 @@ export default function VillaForm({
                 </ol>
             </nav>
 
-            {/* Category Banner */}
-            <div className="mb-10 flex items-center justify-between p-4 rounded-2xl bg-[#FAF4EC]/50 border border-[#E9D6C6]/40">
-                <div className="flex items-center gap-3">
+            {/* Category Banner - Updated for Multiple Selection */}
 
-                    <div className="flex items-center gap-2 text-sm">
-                        <span className="font-bold text-[#1E1E1E]">{formData.category.name}</span>
-                        {formData.category.subCategory && (
-                            <>
-                                <span className="text-gray-300">/</span>
-                                <span className="text-gray-600 font-medium">{formData.category.subCategory}</span>
-                            </>
-                        )}
-                        {formData.category.item && (
-                            <>
-                                <span className="text-gray-300">/</span>
-                                <span className="text-[#7A3E2C] font-semibold">
-                                    {typeof formData.category.item === 'string' ? formData.category.item : formData.category.item.name}
-                                </span>
-                            </>
-                        )}
-                    </div>
-                </div>
-                {onBack && currentStep === 1 && (
-                    <button
-                        onClick={onBack}
-                        className="text-xs font-bold text-[#7A3E2C] hover:text-[#5C2D20] transition-colors"
-                    >
-                        Change
-                    </button>
-                )}
-            </div>
 
             <form onSubmit={(e) => e.preventDefault()} onKeyDown={handleKeyDown} className="space-y-10">
 

@@ -1,12 +1,33 @@
 import Link from 'next/link';
-import { PencilSquareIcon } from '@heroicons/react/24/outline';
+import { PencilSquareIcon, PlusIcon, ExclamationTriangleIcon } from '@heroicons/react/24/outline';
 import { BrandStatementApiResponse } from '@/services/BrandStatementService';
 
 type Props = {
-    data: BrandStatementApiResponse;
+    data: BrandStatementApiResponse | null;
 };
 
 export default function BrandStatementSection({ data }: Props) {
+    if (!data || !data.titleStatement) {
+        return (
+            <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-[#E0D4C6] bg-white py-16 text-center shadow-sm">
+                <ExclamationTriangleIcon className="h-12 w-12 text-yellow-500 mb-4" />
+                <h3 className="text-lg font-semibold text-[#2E2620]">No Brand Statement Found</h3>
+                <p className="mt-2 text-sm text-gray-500 max-w-sm px-6">
+                    Start by defining your brand statement to tell visitors what you're all about.
+                </p>
+                <Link href="/beranda/display/brand-statement/add" className="mt-8">
+                    <button
+                        type="button"
+                        className="inline-flex items-center gap-2 rounded-full bg-[#7A3E2C] px-8 py-3 text-sm font-bold text-white shadow-lg shadow-[#7A3E2C]/20 hover:bg-[#5C2D20] transition-all uppercase tracking-widest"
+                    >
+                        <PlusIcon className="h-5 w-5" />
+                        <span>Add Brand Statement</span>
+                    </button>
+                </Link>
+            </div>
+        );
+    }
+
     return (
         <section className="relative w-full min-h-[400px] rounded-2xl bg-[#7A3E2B] p-10 text-white overflow-hidden">
             {/* 🔧 Edit Button */}

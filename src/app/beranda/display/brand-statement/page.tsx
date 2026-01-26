@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import BreadCrumbs, {
     BreadCrumbItem,
 } from '@/components/Common/Breadcrumbs';
+import { brandStatementData } from '@/data/BrandStatementData';
 import BrandStatementSection from '@/components/DisplayManage/BrandStatement/BrandStatementSection';
 import BrandStatementSkeleton from '@/components/DisplayManage/BrandStatement/BrandStatementSkeleton';
 import { getBrandStatement, BrandStatementApiResponse } from '@/services/BrandStatementService';
@@ -23,7 +24,8 @@ export default function Page() {
                 const apiData = await getBrandStatement();
                 setData(apiData);
             } catch (error) {
-                console.error('Failed to fetch brand statement:', error);
+                console.warn('Failed to fetch brand statement from API:', error);
+                setData(null);
             } finally {
                 setIsLoading(false);
             }
@@ -43,10 +45,8 @@ export default function Page() {
 
             {isLoading ? (
                 <BrandStatementSkeleton />
-            ) : data ? (
-                <BrandStatementSection data={data} />
             ) : (
-                <div className="text-red-500">Failed to load brand statement.</div>
+                <BrandStatementSection data={data} />
             )}
         </div>
     );

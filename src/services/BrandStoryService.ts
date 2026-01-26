@@ -39,3 +39,14 @@ export const updateBrandStory = async (id: string, payload: UpdateBrandStoryPayl
         throw error;
     }
 };
+
+export const createBrandStory = async (payload: UpdateBrandStoryPayload): Promise<void> => {
+    try {
+        console.log(`Creating brand story: /dashboard/brand-story`, payload);
+        await axios.post(`/dashboard/brand-story`, payload);
+    } catch (error) {
+        console.error("Error creating brand story:", error);
+        throw error;
+    }
+};
+

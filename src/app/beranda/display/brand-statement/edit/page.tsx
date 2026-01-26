@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import BreadCrumbs, {
     BreadCrumbItem,
 } from '@/components/Common/Breadcrumbs';
+import { brandStatementData } from '@/data/BrandStatementData';
 import BrandStatementEditSection from '@/components/DisplayManage/BrandStatement/BrandStatementEditSection';
 import BrandStatementEditSkeleton from '@/components/DisplayManage/BrandStatement/BrandStatementEditSkeleton';
 import { getBrandStatement, updateBrandStatement, BrandStatementApiResponse, UpdateBrandStatementPayload } from '@/services/BrandStatementService';
@@ -21,7 +22,15 @@ export default function Page() {
                 const apiData = await getBrandStatement();
                 setData(apiData);
             } catch (error) {
-                console.error('Failed to fetch brand statement:', error);
+                console.warn('Failed to fetch brand statement from API, using fallback data:', error);
+                const fallbackData: BrandStatementApiResponse = {
+                    id: 'fallback-id',
+                    titleStatement: brandStatementData.title,
+                    subTitleStatement: brandStatementData.subtitle,
+                    locationStatementLeft: brandStatementData.locationLeft,
+                    locationStatementRight: brandStatementData.locationRight,
+                };
+                setData(fallbackData);
             } finally {
                 setIsLoading(false);
             }

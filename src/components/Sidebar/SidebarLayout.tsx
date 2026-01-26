@@ -61,7 +61,7 @@ const navigation: NavItem[] = [
         icon: UsersIcon,
         children: [
             { name: "Guest", href: "/beranda/manage-user/guest" },
-            { name: "Home Owner", href: "/beranda/manage-user/home-owner" },
+            { name: "Property Owner", href: "/beranda/manage-user/home-owner" },
         ],
     },
     { name: "Testimonial Management", href: "/beranda/testimonial", icon: ChatBubbleLeftRightIcon, current: false },

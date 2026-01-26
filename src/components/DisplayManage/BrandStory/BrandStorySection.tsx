@@ -2,11 +2,11 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
-import { PencilSquareIcon } from '@heroicons/react/24/outline';
+import { PencilSquareIcon, PlusIcon, ExclamationTriangleIcon } from '@heroicons/react/24/outline';
 import { BrandStoryApiResponse } from '@/services/BrandStoryService';
 
 type Props = {
-    data: BrandStoryApiResponse;
+    data: BrandStoryApiResponse | null;
     images?: { // Optional for now, as API doesn't return images yet
         id: string;
         url: string;
@@ -15,6 +15,26 @@ type Props = {
 };
 
 export default function BrandStorySection({ data, images = [] }: Props) {
+    if (!data || !data.brandName) {
+        return (
+            <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-[#E0D4C6] bg-white py-16 text-center shadow-sm">
+                <ExclamationTriangleIcon className="h-12 w-12 text-yellow-500 mb-4" />
+                <h3 className="text-lg font-semibold text-[#2E2620]">No Brand Story Found</h3>
+                <p className="mt-2 text-sm text-gray-500 max-w-sm px-6">
+                    Define your brand's unique story and history to connect with your visitors.
+                </p>
+                <Link href="/beranda/display/brand-story/add" className="mt-8">
+                    <button
+                        type="button"
+                        className="inline-flex items-center gap-2 rounded-full bg-[#7A3E2C] px-8 py-3 text-sm font-bold text-white shadow-lg shadow-[#7A3E2C]/20 hover:bg-[#5C2D20] transition-all uppercase tracking-widest"
+                    >
+                        <PlusIcon className="h-5 w-5" />
+                        <span>Add Brand Story</span>
+                    </button>
+                </Link>
+            </div>
+        );
+    }
     return (
         <section className="space-y-8">
             {/* ===== BRAND TEXT PREVIEW ===== */}

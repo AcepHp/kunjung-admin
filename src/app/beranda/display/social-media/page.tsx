@@ -6,6 +6,7 @@ import BreadCrumbs, {
 } from '@/components/Common/Breadcrumbs';
 import SocialMediaSection from '@/components/DisplayManage/SocialMedia/SocialMediaSection';
 import type { SocialMediaData } from '@/data/SocialMediaData';
+import { SocialMediaData as LocalSocialMediaData } from '@/data/SocialMediaData';
 import { getSocialMediaList } from '@/services/SocialMediaService';
 import { getPlatformFromUrl } from '@/data/utils';
 
@@ -31,7 +32,8 @@ export default function SocialMediaPage() {
                 }));
                 setData(mappedData);
             } catch (error) {
-                console.error('Failed to fetch social media data:', error);
+                console.warn('Failed to fetch social media data from API, using fallback data:', error);
+                setData(LocalSocialMediaData);
             } finally {
                 setIsLoading(false);
             }
