@@ -1,18 +1,12 @@
 'use client';
 
-import { useState } from 'react';
-
-type BrandStatementForm = {
-    title: string;
-    subtitle: string;
-    locationLeft: string;
-    locationRight: string;
-};
+import { useState, useEffect } from 'react';
+import { BrandStatementApiResponse, UpdateBrandStatementPayload } from '@/services/BrandStatementService';
 
 type Props = {
-    initialData: BrandStatementForm;
+    initialData: BrandStatementApiResponse;
     onCancel: () => void;
-    onSave: (data: BrandStatementForm) => void;
+    onSave: (data: UpdateBrandStatementPayload) => void;
 };
 
 export default function BrandStatementEditSection({
@@ -20,10 +14,24 @@ export default function BrandStatementEditSection({
     onCancel,
     onSave,
 }: Props) {
-    const [form, setForm] = useState<BrandStatementForm>(initialData);
+    const [form, setForm] = useState<UpdateBrandStatementPayload>({
+        titleStatement: initialData.titleStatement,
+        subTitleStatement: initialData.subTitleStatement,
+        locationStatementLeft: initialData.locationStatementLeft,
+        locationStatementRight: initialData.locationStatementRight,
+    });
+
+    useEffect(() => {
+        setForm({
+            titleStatement: initialData.titleStatement,
+            subTitleStatement: initialData.subTitleStatement,
+            locationStatementLeft: initialData.locationStatementLeft,
+            locationStatementRight: initialData.locationStatementRight,
+        });
+    }, [initialData]);
 
     const handleChange = (
-        field: keyof BrandStatementForm,
+        field: keyof UpdateBrandStatementPayload,
         value: string
     ) => {
         setForm((prev) => ({ ...prev, [field]: value }));
@@ -38,9 +46,9 @@ export default function BrandStatementEditSection({
                 </label>
                 <input
                     type="text"
-                    value={form.title}
+                    value={form.titleStatement}
                     onChange={(e) =>
-                        handleChange('title', e.target.value)
+                        handleChange('titleStatement', e.target.value)
                     }
                     className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-[#7A3E2C] focus:ring-[#7A3E2C]"
                 />
@@ -53,9 +61,9 @@ export default function BrandStatementEditSection({
                 </label>
                 <textarea
                     rows={2}
-                    value={form.subtitle}
+                    value={form.subTitleStatement}
                     onChange={(e) =>
-                        handleChange('subtitle', e.target.value)
+                        handleChange('subTitleStatement', e.target.value)
                     }
                     className="w-full resize-none rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-[#7A3E2C] focus:ring-[#7A3E2C]"
                 />
@@ -69,10 +77,10 @@ export default function BrandStatementEditSection({
                     </label>
                     <textarea
                         rows={3}
-                        value={form.locationLeft}
+                        value={form.locationStatementLeft}
                         onChange={(e) =>
                             handleChange(
-                                'locationLeft',
+                                'locationStatementLeft',
                                 e.target.value
                             )
                         }
@@ -86,10 +94,10 @@ export default function BrandStatementEditSection({
                     </label>
                     <textarea
                         rows={3}
-                        value={form.locationRight}
+                        value={form.locationStatementRight}
                         onChange={(e) =>
                             handleChange(
-                                'locationRight',
+                                'locationStatementRight',
                                 e.target.value
                             )
                         }

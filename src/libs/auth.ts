@@ -8,8 +8,11 @@ import axios from "./axios";
 export const { auth, handlers, signIn, signOut } = NextAuth({
   providers: [
     Credentials({
-      async authorize(user) {
-        if (user) return user;
+      credentials: {},
+      async authorize(credentials) {
+        if (credentials) {
+          return credentials;
+        }
         return null;
       },
     }),

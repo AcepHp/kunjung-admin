@@ -2,7 +2,7 @@
 
 import type React from "react"
 
-import { useState, type ReactNode } from "react"
+import { useState, useEffect, type ReactNode } from "react"
 import {
     Dialog,
     DialogBackdrop,
@@ -28,7 +28,8 @@ import {
 import { ChevronDownIcon } from "@heroicons/react/20/solid"
 import Image from "next/image"
 import Link from "next/link"
-import { usePathname } from "next/navigation"
+import { usePathname, useRouter } from "next/navigation"
+import { useSession, signOut } from "next-auth/react"
 
 type NavChild = {
     name: string
@@ -53,8 +54,8 @@ type GroupItem = {
 
 const navigation: NavItem[] = [
     { name: "Dashboard", href: "/beranda", icon: HomeIcon, current: false },
-    { name: "Villas", href: "/villas", icon: FolderIcon, current: false },
-    { name: "Reservations", href: "/reservations", icon: CalendarIcon, current: false },
+    { name: "Property Management", href: "/beranda/manage-property", icon: FolderIcon, current: false },
+    { name: "Reservations", href: "/beranda/reservations", icon: CalendarIcon, current: false },
     {
         name: "User Management",
         icon: UsersIcon,
@@ -84,10 +85,7 @@ const propertyGroups: GroupItem[] = [
     { id: 3, name: "Partner Owners", href: "#", initial: "PO", current: false },
 ]
 
-const userNavigation = [
-    { name: "Your profile", href: "#" },
-    { name: "Sign out", href: "#" },
-]
+
 
 function classNames(...classes: Array<string | boolean | null | undefined>) {
     return classes.filter(Boolean).join(" ")
@@ -117,6 +115,37 @@ export default function SidebarLayout({
 }) {
     const [sidebarOpen, setSidebarOpen] = useState(false)
     const pathname = usePathname()
+    const router = useRouter()
+    const { data: session } = useSession()
+
+    // Get user initials from session
+    const getInitials = () => {
+        if (session?.user) {
+            const first = session.user.firstName?.charAt(0) || ""
+            const last = session.user.lastName?.charAt(0) || ""
+            return first + last || "AK"
+        }
+        return "AK"
+    }
+
+    // Get user full name from session
+    const getFullName = () => {
+        if (session?.user) {
+            return `${session.user.firstName || ""} ${session.user.lastName || ""}`.trim() || "Admin Kunjung"
+        }
+        return "Admin Kunjung"
+    }
+
+    // Logout handler
+    const handleLogout = async () => {
+        await signOut({ callbackUrl: "/auth/login" })
+    }
+    const [mounted, setMounted] = useState(false)
+
+    useEffect(() => {
+        setMounted(true)
+    }, [])
+
     const [openDropdowns, setOpenDropdowns] = useState<Record<string, boolean>>(() => {
         const initial: Record<string, boolean> = {}
         navigation.forEach((item) => {
@@ -429,35 +458,78 @@ export default function SidebarLayout({
                             <div aria-hidden="true" className="hidden lg:block lg:h-6 lg:w-px lg:bg-gray-900/10" />
 
                             {/* Profile dropdown */}
-                            <Menu as="div" className="relative">
-                                <MenuButton className="-m-1.5 flex items-center p-1.5">
-                                    <span className="sr-only">Open user menu</span>
-                                    <span className="inline-flex size-8 items-center justify-center rounded-full bg-[#7A3E2C] text-xs font-semibold text-white">
-                                        AK
-                                    </span>
-                                    <span className="hidden lg:flex lg:items-center">
-                                        <span aria-hidden="true" className="ml-3 text-sm/6 font-semibold text-gray-900">
-                                            Admin Kunjung
+                            {mounted ? (
+                                <Menu as="div" className="relative">
+                                    <MenuButton className="-m-1.5 flex items-center p-1.5">
+                                        <span className="sr-only">Open user menu</span>
+                                        {session?.user?.avatar ? (
+                                            <Image
+                                                src={session.user.avatar}
+                                                alt="Profile"
+                                                width={32}
+                                                height={32}
+                                                className="rounded-full object-cover"
+                                            />
+                                        ) : (
+                                            <span className="inline-flex size-8 items-center justify-center rounded-full bg-[#7A3E2C] text-xs font-semibold text-white">
+                                                {getInitials()}
+                                            </span>
+                                        )}
+                                        <span className="hidden lg:flex lg:items-center">
+                                            <span aria-hidden="true" className="ml-3 text-sm/6 font-semibold text-gray-900">
+                                                {getFullName()}
+                                            </span>
+                                            <ChevronDownIcon aria-hidden="true" className="ml-2 size-5 text-gray-400" />
                                         </span>
-                                        <ChevronDownIcon aria-hidden="true" className="ml-2 size-5 text-gray-400" />
-                                    </span>
-                                </MenuButton>
-                                <MenuItems
-                                    transition
-                                    className="absolute right-0 z-10 mt-2.5 w-40 origin-top-right rounded-md bg-white ring-1 shadow-lg ring-gray-900/5 transition focus:outline-hidden data-closed:scale-95 data-closed:transform data-closed:opacity-0 data-enter:duration-100 data-enter:ease-out data-leave:duration-75 data-leave:ease-in"
-                                >
-                                    {userNavigation.map((item) => (
-                                        <MenuItem key={item.name}>
-                                            <a
-                                                href={item.href}
-                                                className="block px-5 py-3 text-sm/6 text-gray-900 data-focus:bg-gray-50 data-focus:rounded-md data-focus:outline-hidden"
+                                    </MenuButton>
+                                    <MenuItems
+                                        transition
+                                        className="absolute right-0 z-10 mt-2.5 w-44 origin-top-right rounded-md bg-white ring-1 shadow-lg ring-gray-900/5 transition focus:outline-hidden data-closed:scale-95 data-closed:transform data-closed:opacity-0 data-enter:duration-100 data-enter:ease-out data-leave:duration-75 data-leave:ease-in"
+                                    >
+                                        <MenuItem>
+                                            <Link
+                                                href="/beranda/profile/edit"
+                                                className="block px-5 py-3 text-sm/6 text-gray-900 data-focus:bg-gray-50 data-focus:rounded-md data-focus:outline-hidden hover:bg-gray-50 transition-colors"
                                             >
-                                                {item.name}
-                                            </a>
+                                                Your Profile
+                                            </Link>
                                         </MenuItem>
-                                    ))}
-                                </MenuItems>
-                            </Menu>
+                                        <MenuItem>
+                                            <button
+                                                onClick={handleLogout}
+                                                className="block w-full text-left px-5 py-3 text-sm/6 text-red-600 data-focus:bg-gray-50 data-focus:rounded-md data-focus:outline-hidden hover:bg-gray-50 transition-colors"
+                                            >
+                                                Logout
+                                            </button>
+                                        </MenuItem>
+                                    </MenuItems>
+                                </Menu>
+                            ) : (
+                                <div className="relative">
+                                    <button className="-m-1.5 flex items-center p-1.5">
+                                        <span className="sr-only">Open user menu</span>
+                                        {session?.user?.avatar ? (
+                                            <Image
+                                                src={session.user.avatar}
+                                                alt="Profile"
+                                                width={32}
+                                                height={32}
+                                                className="rounded-full object-cover"
+                                            />
+                                        ) : (
+                                            <span className="inline-flex size-8 items-center justify-center rounded-full bg-[#7A3E2C] text-xs font-semibold text-white">
+                                                {getInitials()}
+                                            </span>
+                                        )}
+                                        <span className="hidden lg:flex lg:items-center">
+                                            <span aria-hidden="true" className="ml-3 text-sm/6 font-semibold text-gray-900">
+                                                {getFullName()}
+                                            </span>
+                                            <ChevronDownIcon aria-hidden="true" className="ml-2 size-5 text-gray-400" />
+                                        </span>
+                                    </button>
+                                </div>
+                            )}
                         </div>
                     </div>
 

@@ -1,11 +1,11 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { XMarkIcon } from '@heroicons/react/24/outline';
-import { HeroSectionData } from '../../../data/HeroSectionData';
+import { HeroSectionApiResponse } from '@/services/HeroSectionService';
 
 type Props = {
-    data: HeroSectionData;
+    data: HeroSectionApiResponse;
     onCancel?: () => void;
     onSave?: (payload: {
         headline: string;
@@ -19,11 +19,15 @@ export default function HeroCopywritingEdit({
     onCancel,
     onSave,
 }: Props) {
-    const copy = data.data.heroSection.copywriting;
+    const [headline, setHeadline] = useState(data.headline);
+    const [description, setDescription] = useState(data.description);
+    const [signature, setSignature] = useState(data.signature);
 
-    const [headline, setHeadline] = useState(copy.headline);
-    const [description, setDescription] = useState(copy.description);
-    const [signature, setSignature] = useState(copy.signature);
+    useEffect(() => {
+        setHeadline(data.headline);
+        setDescription(data.description);
+        setSignature(data.signature);
+    }, [data]);
 
     return (
         <section className="rounded-2xl border border-[#E9D6C6] bg-white p-5 sm:p-6 shadow-sm">

@@ -1,9 +1,9 @@
 import Link from 'next/link';
 import { PencilSquareIcon } from '@heroicons/react/24/outline';
-import { BrandStatementData } from '@/data/BrandStatementData';
+import { BrandStatementApiResponse } from '@/services/BrandStatementService';
 
 type Props = {
-    data: BrandStatementData;
+    data: BrandStatementApiResponse;
 };
 
 export default function BrandStatementSection({ data }: Props) {
@@ -23,21 +23,21 @@ export default function BrandStatementSection({ data }: Props) {
             {/* Content */}
             <div className="max-w-3xl">
                 <h1 className="text-4xl md:text-5xl font-serif font-semibold mb-4">
-                    {data.title}
+                    {data.titleStatement}
                 </h1>
 
                 <p className="text-sm md:text-base text-white/90 max-w-md">
-                    {data.subtitle}
+                    {data.subTitleStatement}
                 </p>
             </div>
 
             {/* Footer Location */}
             <div className="absolute bottom-6 left-6 text-white/30 text-xl font-semibold">
-                {data.locationLeft}
+                {data.locationStatementLeft}
             </div>
 
             <div className="absolute bottom-6 right-6 text-white/30 text-xl font-semibold">
-                {data.locationRight}
+                {data.locationStatementRight}
             </div>
         </section>
     );

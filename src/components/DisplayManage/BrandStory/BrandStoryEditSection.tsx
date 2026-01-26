@@ -1,22 +1,13 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Editor } from '@tinymce/tinymce-react';
+import { BrandStoryApiResponse, UpdateBrandStoryPayload } from '@/services/BrandStoryService';
 
 type Props = {
-    initialData: {
-        brandName: string;
-        headline: string;
-        subHeadline: string;
-        description: string[];
-    };
+    initialData: BrandStoryApiResponse;
     onCancel?: () => void;
-    onSave?: (data: {
-        brandName: string;
-        headline: string;
-        subHeadline: string;
-        description: string[];
-    }) => void;
+    onSave?: (data: UpdateBrandStoryPayload) => void;
 };
 
 export default function BrandStoryEditSection({
@@ -25,23 +16,23 @@ export default function BrandStoryEditSection({
     onSave,
 }: Props) {
     const [brandName, setBrandName] = useState(initialData.brandName);
-    const [headline, setHeadline] = useState(initialData.headline);
-    const [subHeadline, setSubHeadline] = useState(initialData.subHeadline);
-    const [description, setDescription] = useState(
-        initialData.description.join('<p></p>')
-    );
+    const [headline, setHeadline] = useState(initialData.headlineStory);
+    const [subHeadline, setSubHeadline] = useState(initialData.subHeadlineStory);
+    const [description, setDescription] = useState(initialData.descriptionStory);
+
+    useEffect(() => {
+        setBrandName(initialData.brandName);
+        setHeadline(initialData.headlineStory);
+        setSubHeadline(initialData.subHeadlineStory);
+        setDescription(initialData.descriptionStory);
+    }, [initialData]);
 
     const handleSave = () => {
-        const parsedDescription = description
-            .split('</p>')
-            .map((d) => d.replace('<p>', '').trim())
-            .filter(Boolean);
-
         onSave?.({
             brandName,
-            headline,
-            subHeadline,
-            description: parsedDescription,
+            headlineStory: headline,
+            subHeadlineStory: subHeadline,
+            descriptionStory: description,
         });
     };
 
