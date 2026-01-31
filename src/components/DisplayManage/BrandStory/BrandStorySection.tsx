@@ -9,7 +9,7 @@ type Props = {
 };
 
 export default function BrandStorySection({ data }: Props) {
-    if (!data || !data.brandName) {
+    if (!data) {
         return (
             <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-[#E0D4C6] bg-white py-16 text-center shadow-sm">
                 <ExclamationTriangleIcon className="h-12 w-12 text-yellow-500 mb-4" />
@@ -46,20 +46,20 @@ export default function BrandStorySection({ data }: Props) {
 
                 <div className="space-y-5 max-w-3xl">
                     <span className="text-sm font-semibold tracking-widest text-gray-500 uppercase">
-                        {data.brandName}
+                        {data.brandName || ""}
                     </span>
 
                     <h2 className="text-3xl font-bold text-gray-900">
-                        {data.headlineStory}
+                        {data.headlineStory || ""}
                     </h2>
 
                     <p className="text-lg italic text-gray-600">
-                        {data.subHeadlineStory}
+                        {data.subHeadlineStory || ""}
                     </p>
 
                     <div
                         className="space-y-3 text-gray-700 prose prose-sm max-w-none"
-                        dangerouslySetInnerHTML={{ __html: data.descriptionStory }}
+                        dangerouslySetInnerHTML={{ __html: data.descriptionStory || "" }}
                     />
                 </div>
             </div>
