@@ -6,9 +6,7 @@ export default function ServiceRecommendationSkeleton() {
     return (
         <section className="space-y-6">
             {/* Header with Add Button Skeleton */}
-            <div className="flex justify-end">
-                <div className="h-9 w-32 animate-pulse rounded-full bg-[#EFE3D7]" />
-            </div>
+            
 
             {/* ===== GRID SKELETON ===== */}
             <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">

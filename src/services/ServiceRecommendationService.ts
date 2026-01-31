@@ -45,10 +45,14 @@ export const createServiceRecommendation = async (formData: FormData): Promise<v
 export const updateServiceRecommendation = async (id: string | number, formData: FormData): Promise<void> => {
     try {
         console.log(`Updating service recommendation ${id} with fields:`, Array.from(formData.keys()));
-        // Note: Some APIs require POST with _method=PATCH for multipart updates
-        await axios.post(`/dashboard-images/hero-recomendation/${id}`, formData);
-    } catch (error) {
+        // Note: Using PATCH to match other services (like BrandImageService) and standard REST patterns.
+        await axios.patch(`/dashboard-images/hero-recomendation/${id}`, formData);
+    } catch (error: any) {
         console.error("Error updating service recommendation:", error);
+        if (error.response) {
+            console.error("Response Details (Status):", error.response.status);
+            console.error("Response Details (Data):", JSON.stringify(error.response.data, null, 2));
+        }
         throw error;
     }
 };
