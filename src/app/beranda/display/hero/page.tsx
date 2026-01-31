@@ -8,10 +8,11 @@ import { heroSectionDummy } from "@/data/HeroSectionData";
 import BreadCrumbs, {
     BreadCrumbItem,
 } from "@/components/Common/Breadcrumbs";
-import { getHeroSection, HeroSectionApiResponse } from "@/services/HeroSectionService";
+import { getHeroSection, HeroSectionApiResponse, getHeroSlides, HeroSlideApiResponse } from "@/services/HeroSectionService";
 
 export default function Page() {
     const [heroData, setHeroData] = useState<HeroSectionApiResponse | null>(null);
+    const [slides, setSlides] = useState<HeroSlideApiResponse[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [isDataEmpty, setIsDataEmpty] = useState(false);
 
@@ -30,18 +31,27 @@ export default function Page() {
             };
 
             try {
-                const data = await getHeroSection();
-                if (!data) {
+                const [heroDetail, slidesData] = await Promise.all([
+                    getHeroSection(),
+                    getHeroSlides()
+                ]);
+
+                if (!heroDetail) {
                     setHeroData(fallbackData);
                     setIsDataEmpty(true);
                 } else {
-                    setHeroData(data);
+                    setHeroData(heroDetail);
                     setIsDataEmpty(false);
                 }
+
+                setSlides(slidesData || []);
             } catch (error) {
-                console.warn("Failed to fetch hero section from API, using fallback data:", error);
+                console.warn("Failed to fetch data from API, using fallback for hero detail:", error);
                 setHeroData(fallbackData);
                 setIsDataEmpty(true);
+
+                // For slides, we don't really have a fallback other than empty array or dummy
+                // Let's keep dummy if needed, but user wants API integration.
             } finally {
                 setIsLoading(false);
             }
@@ -64,7 +74,7 @@ export default function Page() {
                 <HeroCopywriting data={heroData} isEmpty={isDataEmpty} />
             )}
 
-            <HeroTable slides={heroSectionDummy.data.heroSection.slides} />
+            <HeroTable slides={slides} isLoading={isLoading} />
         </div>
     );
 }

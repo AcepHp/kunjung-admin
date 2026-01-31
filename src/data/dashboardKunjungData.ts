@@ -47,25 +47,60 @@ export type MonthlyFinancials = {
 export const dashboardKunjungData = {
     /* ===== Summary Cards ===== */
     summary: {
-        totalIncome: {
-            value: 5_250_000_000,
-            growth: 12.5,
-        } as SummaryMetric,
-
-        totalOutcome: {
-            value: 2_150_000_000,
-            change: -2.1,
-        } as SummaryMetric,
-
-        netProfit: {
-            value: 3_100_000_000,
-            growth: 18.2,
-        } as SummaryMetric,
-
-        occupancyRate: {
-            value: 84,
-            growth: 5.4,
-        } as SummaryMetric,
+        daily: {
+            totalIncome: {
+                value: 45_000_000,
+                growth: 8.5,
+            } as SummaryMetric,
+            totalOutcome: {
+                value: 18_000_000,
+                change: -1.5,
+            } as SummaryMetric,
+            netProfit: {
+                value: 27_000_000,
+                growth: 15.2,
+            } as SummaryMetric,
+            occupancyRate: {
+                value: 82,
+                growth: 3.2,
+            } as SummaryMetric,
+        },
+        weekly: {
+            totalIncome: {
+                value: 315_000_000,
+                growth: 10.5,
+            } as SummaryMetric,
+            totalOutcome: {
+                value: 126_000_000,
+                change: -1.8,
+            } as SummaryMetric,
+            netProfit: {
+                value: 189_000_000,
+                growth: 16.5,
+            } as SummaryMetric,
+            occupancyRate: {
+                value: 83,
+                growth: 4.5,
+            } as SummaryMetric,
+        },
+        monthly: {
+            totalIncome: {
+                value: 5_250_000_000,
+                growth: 12.5,
+            } as SummaryMetric,
+            totalOutcome: {
+                value: 2_150_000_000,
+                change: -2.1,
+            } as SummaryMetric,
+            netProfit: {
+                value: 3_100_000_000,
+                growth: 18.2,
+            } as SummaryMetric,
+            occupancyRate: {
+                value: 84,
+                growth: 5.4,
+            } as SummaryMetric,
+        },
     },
 
     /* ===== Line Chart ===== */
@@ -151,6 +186,18 @@ export const dashboardKunjungData = {
     },
 
     /* ===== Monthly Financials (Income vs Outcome) ===== */
+    dailyFinancials: {
+        labels: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
+        income: [6_000_000, 7_500_000, 8_200_000, 9_000_000, 10_500_000, 12_000_000, 11_500_000],
+        outcome: [2_500_000, 3_000_000, 3_200_000, 3_500_000, 4_000_000, 4_500_000, 4_200_000],
+    } as MonthlyFinancials,
+
+    weeklyFinancials: {
+        labels: ["Week 1", "Week 2", "Week 3", "Week 4"],
+        income: [45_000_000, 52_000_000, 58_000_000, 62_000_000],
+        outcome: [18_000_000, 21_000_000, 23_000_000, 25_000_000],
+    } as MonthlyFinancials,
+
     monthlyFinancials: {
         labels: [
             "Jan", "Feb", "Mar", "Apr", "May", "Jun",

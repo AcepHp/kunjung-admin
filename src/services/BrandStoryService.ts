@@ -49,4 +49,3 @@ export const createBrandStory = async (payload: UpdateBrandStoryPayload): Promis
         throw error;
     }
 };
-

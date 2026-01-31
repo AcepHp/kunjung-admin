@@ -7,6 +7,7 @@ type VillaDetail = {
 type Amenity = {
     label: string;
     available: boolean;
+    description?: string;
 };
 
 type Discount = {

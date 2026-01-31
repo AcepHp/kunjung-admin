@@ -118,8 +118,11 @@ export default function VillaForm({
         initialData?.descImages || [null, null, null]
     );
 
-    const [selectedAmenities, setSelectedAmenities] = useState<string[]>(
-        initialData?.amenities?.map((a: any) => a.label) || []
+    const [selectedAmenities, setSelectedAmenities] = useState<{ label: string, description?: string }[]>(
+        initialData?.amenities?.filter((a: any) => a.available).map((a: any) => ({
+            label: a.label,
+            description: a.description
+        })) || []
     );
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
@@ -233,12 +236,16 @@ export default function VillaForm({
         setFormData((prev: any) => ({ ...prev, details: newDetails }));
     };
 
-    const handleAmenityToggle = (amenity: string) => {
+    const handleAmenityToggle = (amenity: string | { label: string, description?: string }) => {
+        const label = typeof amenity === 'string' ? amenity : amenity.label;
+        const description = typeof amenity === 'object' ? amenity.description : '';
+
         setSelectedAmenities(prev => {
-            if (prev.includes(amenity)) {
-                return prev.filter(a => a !== amenity);
+            const exists = prev.find(a => a.label === label);
+            if (exists) {
+                return prev.filter(a => a.label !== label);
             } else {
-                return [...prev, amenity];
+                return [...prev, { label, description }];
             }
         });
     };

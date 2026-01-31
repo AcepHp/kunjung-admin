@@ -1,5 +1,6 @@
 import React from 'react';
 import { dashboardKunjungData } from '@/data/dashboardKunjungData';
+import { CustomDateRange } from './DateRangeFilter';
 import {
     ArrowTrendingUpIcon,
     ArrowTrendingDownIcon,
@@ -66,40 +67,76 @@ const SummaryCard = ({
     );
 };
 
-export default function DashboardSummary() {
+interface DashboardSummaryProps {
+    customDateRange?: CustomDateRange;
+}
+
+export default function DashboardSummary({ customDateRange }: DashboardSummaryProps) {
     const { summary } = dashboardKunjungData;
-    const { totalIncome, totalOutcome, netProfit, occupancyRate } = summary as any;
+    const [isLoading, setIsLoading] = React.useState(false);
+
+    // Create a robust seed by summing the timestamps
+    const getSeed = () => {
+        if (!customDateRange?.startDate || !customDateRange?.endDate) return 0;
+        const s = customDateRange.startDate.getTime();
+        const e = customDateRange.endDate.getTime();
+        // Use a simple hash-like combine to ensure every range is unique
+        return (s + e) % 1000;
+    };
+
+    const seed = getSeed();
+
+    // Simulate loading
+    React.useEffect(() => {
+        if (customDateRange?.startDate && customDateRange?.endDate) {
+            setIsLoading(true);
+            const timer = setTimeout(() => setIsLoading(false), 500);
+            return () => clearTimeout(timer);
+        }
+    }, [seed]);
+
+    const periodData = summary.monthly;
+
+    // Per-day unique multiplier
+    const multiplier = 1 + (seed / 5000) * (seed % 2 === 0 ? 1 : -1);
+
+    const incomeVal = Math.round(periodData.totalIncome.value * multiplier);
+    const outcomeVal = Math.round(periodData.totalOutcome.value * (1 - (seed / 8000)));
+    const profitVal = incomeVal - outcomeVal;
+
+    const occupancyBase = periodData.occupancyRate.value;
+    const occupancyVal = Math.min(100, Math.max(30, Math.round(occupancyBase + (seed % 20) - 10)));
 
     return (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <div className={`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8 transition-all duration-500 ${isLoading ? 'opacity-30 blur-md pointer-events-none scale-[0.98]' : 'opacity-100'}`}>
             <SummaryCard
                 title="Total Income"
-                value={totalIncome.value}
-                growth={totalIncome.growth}
+                value={incomeVal}
+                growth={periodData.totalIncome.growth! + (seed / 100)}
                 isCurrency
                 icon={BanknotesIcon}
                 colorClass="bg-emerald-600"
             />
             <SummaryCard
                 title="Total Outcome"
-                value={totalOutcome.value}
-                change={totalOutcome.change}
+                value={outcomeVal}
+                change={periodData.totalOutcome.change! - (seed / 200)}
                 isCurrency
                 icon={CreditCardIcon}
                 colorClass="bg-rose-500"
             />
             <SummaryCard
                 title="Net Profit"
-                value={netProfit.value}
-                growth={netProfit.growth}
+                value={profitVal}
+                growth={periodData.netProfit.growth! + (seed / 150)}
                 isCurrency
                 icon={ChartBarIcon}
                 colorClass="bg-[#7A3E2C]"
             />
             <SummaryCard
                 title="Occupancy Rate"
-                value={occupancyRate.value}
-                growth={occupancyRate.growth}
+                value={occupancyVal}
+                growth={periodData.occupancyRate.growth! + (seed / 300)}
                 isPercent
                 icon={BuildingOffice2Icon}
                 colorClass="bg-amber-500"

@@ -17,10 +17,10 @@ import { categorizedAmenities } from '@/data/amenities';
 
 interface Step3PhysicalDetailsProps {
     formData: any;
-    selectedAmenities: string[];
+    selectedAmenities: { label: string, description?: string }[];
     handleAddressChange: (newAddress: string) => void;
     handleMapUrlChange: (newUrl: string) => void;
-    handleAmenityToggle: (amenity: string) => void;
+    handleAmenityToggle: (amenity: string | { label: string, description?: string }) => void;
     handleChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => void;
     setFormData: React.Dispatch<React.SetStateAction<any>>;
 }
@@ -35,10 +35,10 @@ export default function Step3PhysicalDetails({
     setFormData
 }: Step3PhysicalDetailsProps) {
     const [isModalOpen, setIsModalOpen] = useState(false);
-    const [newItem, setNewItem] = useState({ name: '', category: categorizedAmenities[0].category });
+    const [newItem, setNewItem] = useState({ name: '', category: categorizedAmenities[0].category, description: '' });
 
     // Track amenities added via the modal
-    const [extraAmenities, setExtraAmenities] = useState<{ name: string, category: string }[]>([]);
+    const [extraAmenities, setExtraAmenities] = useState<{ name: string, category: string, description?: string }[]>([]);
 
     const handleAddAmenity = () => {
         if (!newItem.name.trim()) return;
@@ -47,19 +47,23 @@ export default function Step3PhysicalDetails({
         setExtraAmenities(prev => [...prev, { ...newItem }]);
 
         // Ensure it is toggled as selected
-        if (!selectedAmenities.includes(newItem.name)) {
-            handleAmenityToggle(newItem.name);
+        const exists = selectedAmenities.some(a => a.label === newItem.name);
+        if (!exists) {
+            handleAmenityToggle({ label: newItem.name, description: newItem.description });
         }
 
         // Reset and close
-        setNewItem({ name: '', category: categorizedAmenities[0].category });
+        setNewItem({ name: '', category: categorizedAmenities[0].category, description: '' });
         setIsModalOpen(false);
     };
 
     // Helper to find which selected amenities are NOT in the master list AND NOT in our categorized extras
     const masterItems = new Set(categorizedAmenities.flatMap(c => c.items));
     const extraItems = new Set(extraAmenities.map(e => e.name));
-    const trulyCustomAmenities = selectedAmenities.filter(a => !masterItems.has(a) && !extraItems.has(a));
+    const trulyCustomAmenities = selectedAmenities.filter(a => !masterItems.has(a.label) && !extraItems.has(a.label));
+
+    // Selection helper
+    const isItemSelected = (label: string) => selectedAmenities.some(a => a.label === label);
 
     return (
         <div className="space-y-10 animate-in fade-in slide-in-from-right-4 duration-500">
@@ -191,8 +195,8 @@ export default function Step3PhysicalDetails({
                     <div className="space-y-12">
                         {categorizedAmenities.map((cat) => {
                             // Merge master items with custom ones added to this category
-                            const currentCategoryExtras = extraAmenities.filter(e => e.category === cat.category).map(e => e.name);
-                            const allItems = [...cat.items, ...currentCategoryExtras];
+                            const currentCategoryExtras = extraAmenities.filter(e => e.category === cat.category);
+                            const masterCategoryItems = cat.items;
 
                             return (
                                 <div key={cat.category} className="space-y-4">
@@ -200,19 +204,48 @@ export default function Step3PhysicalDetails({
                                         <h4 className="text-sm font-bold uppercase tracking-wider">{cat.category}</h4>
                                     </div>
                                     <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3">
-                                        {allItems.map((item) => (
+                                        {/* Master items */}
+                                        {masterCategoryItems.map((item) => (
                                             <button
                                                 key={item}
                                                 type="button"
                                                 onClick={() => handleAmenityToggle(item)}
-                                                className={`p-3 text-left rounded-xl border transition-all duration-200 flex items-center justify-between text-xs gap-2 min-h-[48px] ${selectedAmenities.includes(item)
+                                                className={`p-3 text-left rounded-xl border transition-all duration-200 flex flex-col justify-center text-xs gap-1 min-h-[56px] ${isItemSelected(item)
                                                     ? 'border-[#7A3E2C] bg-[#FAF4EC] text-[#7A3E2C] font-bold shadow-sm'
                                                     : 'border-[#E9D6C6]/60 bg-white text-gray-600 hover:border-[#7A3E2C]/30 hover:bg-[#FAF8F6]'
                                                     }`}
                                             >
-                                                <span className="flex-1">{item}</span>
-                                                {selectedAmenities.includes(item) && (
-                                                    <CheckIcon className="h-4 w-4 shrink-0" />
+                                                <div className="flex items-start justify-between w-full gap-2">
+                                                    <span className="flex-1 leading-tight">{item}</span>
+                                                    {isItemSelected(item) && (
+                                                        <CheckIcon className="h-4 w-4 shrink-0" />
+                                                    )}
+                                                </div>
+                                                {isItemSelected(item) && selectedAmenities.find(a => a.label === item)?.description && (
+                                                    <p className="text-[10px] font-normal opacity-70 line-clamp-1 italic">{selectedAmenities.find(a => a.label === item)?.description}</p>
+                                                )}
+                                            </button>
+                                        ))}
+
+                                        {/* Extra items for this category */}
+                                        {currentCategoryExtras.map((extra) => (
+                                            <button
+                                                key={extra.name}
+                                                type="button"
+                                                onClick={() => handleAmenityToggle({ label: extra.name, description: extra.description })}
+                                                className={`p-3 text-left rounded-xl border transition-all duration-200 flex flex-col justify-center text-xs gap-1 min-h-[56px] ${isItemSelected(extra.name)
+                                                    ? 'border-[#7A3E2C] bg-[#FAF4EC] text-[#7A3E2C] font-bold shadow-sm'
+                                                    : 'border-[#E9D6C6]/60 bg-white text-gray-600 hover:border-[#7A3E2C]/30 hover:bg-[#FAF8F6]'
+                                                    }`}
+                                            >
+                                                <div className="flex items-start justify-between w-full gap-2">
+                                                    <span className="flex-1 leading-tight">{extra.name}</span>
+                                                    {isItemSelected(extra.name) && (
+                                                        <CheckIcon className="h-4 w-4 shrink-0" />
+                                                    )}
+                                                </div>
+                                                {extra.description && (
+                                                    <p className="text-[10px] font-normal opacity-70 line-clamp-1 italic">{extra.description}</p>
                                                 )}
                                             </button>
                                         ))}
@@ -230,13 +263,18 @@ export default function Step3PhysicalDetails({
                                 <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3">
                                     {trulyCustomAmenities.map((item) => (
                                         <button
-                                            key={item}
+                                            key={item.label}
                                             type="button"
                                             onClick={() => handleAmenityToggle(item)}
-                                            className="p-3 text-left rounded-xl border border-[#7A3E2C] bg-[#FAF4EC] text-[#7A3E2C] font-bold shadow-sm flex items-center justify-between text-xs gap-2 min-h-[48px]"
+                                            className="p-3 text-left rounded-xl border border-[#7A3E2C] bg-[#FAF4EC] text-[#7A3E2C] font-bold shadow-sm flex flex-col justify-center text-xs gap-1 min-h-[56px]"
                                         >
-                                            <span className="flex-1">{item}</span>
-                                            <CheckIcon className="h-4 w-4 shrink-0" />
+                                            <div className="flex items-start justify-between w-full gap-2">
+                                                <span className="flex-1 leading-tight">{item.label}</span>
+                                                <CheckIcon className="h-4 w-4 shrink-0" />
+                                            </div>
+                                            {item.description && (
+                                                <p className="text-[10px] font-normal opacity-70 line-clamp-1 italic">{item.description}</p>
+                                            )}
                                         </button>
                                     ))}
                                 </div>
@@ -286,8 +324,14 @@ export default function Step3PhysicalDetails({
 
             {/* Add Amenity Modal */}
             {isModalOpen && (
-                <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
-                    <div className="bg-white w-full max-w-2xl rounded-3xl shadow-2xl overflow-hidden">
+                <div
+                    className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm"
+                    onClick={() => setIsModalOpen(false)}
+                >
+                    <div
+                        className="bg-white w-full max-w-2xl rounded-3xl shadow-2xl overflow-hidden"
+                        onClick={(e) => e.stopPropagation()}
+                    >
                         <div className="p-8 space-y-6">
                             <div className="flex items-center justify-between">
                                 <h3 className="text-xl font-serif font-bold text-[#1E1E1E]">Add New Amenity</h3>
@@ -321,9 +365,19 @@ export default function Step3PhysicalDetails({
                                         placeholder="e.g. 5G Satellite Internet"
                                         value={newItem.name}
                                         onChange={(e) => setNewItem(prev => ({ ...prev, name: e.target.value }))}
-                                        onKeyDown={(e) => e.key === 'Enter' && handleAddAmenity()}
                                         className="w-full rounded-xl border border-[#E9D6C6] bg-white px-4 py-3 text-sm focus:border-[#7A3E2C] outline-none transition-all"
                                         autoFocus
+                                    />
+                                </div>
+
+                                <div className="space-y-2">
+                                    <label className="block text-xs font-bold text-[#8B6F56] uppercase tracking-widest">Description (Optional)</label>
+                                    <textarea
+                                        placeholder="Provide more context or details about this facility..."
+                                        rows={3}
+                                        value={newItem.description}
+                                        onChange={(e) => setNewItem(prev => ({ ...prev, description: e.target.value }))}
+                                        className="w-full rounded-xl border border-[#E9D6C6] bg-white px-4 py-3 text-sm focus:border-[#7A3E2C] outline-none transition-all resize-none"
                                     />
                                 </div>
                             </div>

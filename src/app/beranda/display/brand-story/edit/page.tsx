@@ -22,15 +22,9 @@ export default function Page() {
                 const apiData = await getBrandStory();
                 setData(apiData);
             } catch (error) {
-                console.warn('Failed to fetch brand story from API, using fallback data:', error);
-                const fallbackData: BrandStoryApiResponse = {
-                    id: 'fallback-id',
-                    brandName: brandStoryData.brandName,
-                    headlineStory: brandStoryData.headline,
-                    subHeadlineStory: brandStoryData.subHeadline,
-                    descriptionStory: brandStoryData.description.map(para => `<p>${para}</p>`).join(''),
-                };
-                setData(fallbackData);
+                console.warn('Failed to fetch brand story from API:', error);
+                // Do NOT set fallback data. Pure API mode means we accept the error state.
+                setData(null);
             } finally {
                 setIsLoading(false);
             }

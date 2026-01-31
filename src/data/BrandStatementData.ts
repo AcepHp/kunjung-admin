@@ -1,14 +1,13 @@
 export type BrandStatementData = {
-    title: string;
-    subtitle: string;
-    locationLeft: string;
-    locationRight: string;
+    titleStatement: string;
+    subTitleStatement: string;
+    locationStatementLeft: string;
+    locationStatementRight: string;
 };
 
 export const brandStatementData: BrandStatementData = {
-    title: 'Warm and Inspired',
-    subtitle:
-        'Where homy comfort meets artistry, leaving you with memories that linger.',
-    locationLeft: 'Bandung',
-    locationRight: 'Indonesia',
+    titleStatement: "Luxury in Harmony with Nature",
+    subTitleStatement: "Experience the ultimate comfort in our exclusive villas.",
+    locationStatementLeft: "Located in the heart of the mountains, our villas offer breathtaking views and a serene atmosphere perfect for relaxation.",
+    locationStatementRight: "Enjoy modern amenities blended with traditional architecture, providing a unique and unforgettable stay for you and your family.",
 };
