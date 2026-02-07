@@ -18,7 +18,6 @@ export default function Page() {
 
     const breadcrumbItems: BreadCrumbItem[] = [
         { name: 'Home', href: '/beranda' },
-        { name: 'Display Management', href: '/beranda/display', disabled: true },
         { name: 'Brand Story', disabled: true },
     ];
 

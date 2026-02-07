@@ -1,17 +1,36 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import BreadCrumbs, { BreadCrumbItem } from '@/components/Common/Breadcrumbs';
 import GalleryEdit from '@/components/BrandEthos/Edit/GalleryEdit';
-import { brandEthosResponse } from '@/data/BrandEthos';
+import { getImmersiveGallery, addImmersiveGalleryImages, updateImmersiveGalleryImage } from '@/services/BrandEthosService';
 import { ChevronRightIcon } from '@heroicons/react/24/outline';
 
 export default function Page() {
     const router = useRouter();
+    const [loading, setLoading] = useState(true);
+    const [images, setImages] = useState<{ id?: string; url: string; alt?: string; file?: File }[]>([]);
 
-    const data = brandEthosResponse.data;
-    const [images, setImages] = useState(data.gallery.images);
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const galleryData = await getImmersiveGallery();
+                if (galleryData) {
+                    setImages(galleryData.map(img => ({
+                        id: img.id,
+                        url: img.imageUrl,
+                        alt: 'Gallery Image'
+                    })));
+                }
+            } catch (error) {
+                console.error('Failed to fetch gallery:', error);
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchData();
+    }, []);
 
     const breadcrumbItems: BreadCrumbItem[] = [
         { name: 'Home', href: '/beranda' },
@@ -19,10 +38,35 @@ export default function Page() {
         { name: 'Edit Gallery', disabled: true },
     ];
 
-    const handleSave = () => {
-        console.log('SAVING GALLERY:', images);
-        router.push('/beranda/brand-ethos');
+    const handleSave = async () => {
+        try {
+            // 1. Handle New Images (No ID)
+            const newImages = images
+                .filter(img => !img.id && img.url.startsWith('data:'))
+                .map(img => ({ imageUrl: img.url }));
+
+            if (newImages.length > 0) {
+                await addImmersiveGalleryImages(newImages);
+            }
+
+            // 2. Handle Updated Images (Has ID + File)
+            const updatedImages = images.filter(img => img.id && img.file);
+
+            // Execute updates in parallel
+            if (updatedImages.length > 0) {
+                await Promise.all(updatedImages.map(img =>
+                    updateImmersiveGalleryImage(img.id!, img.file!)
+                ));
+            }
+
+            router.push('/beranda/brand-ethos');
+        } catch (error) {
+            console.error('Failed to save gallery:', error);
+            alert('Failed to save gallery changes');
+        }
     };
+
+    if (loading) return <div>Loading...</div>;
 
     return (
         <div className="space-y-6">

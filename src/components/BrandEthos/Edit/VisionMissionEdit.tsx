@@ -5,110 +5,116 @@ import { PhotoIcon } from '@heroicons/react/24/outline';
 type Props = {
     vision: string;
     setVision: (val: string) => void;
-    visionImage: { url: string; alt: string };
-    setVisionImage: (val: { url: string; alt: string }) => void;
+    visionImage: { url: string; alt: string; file?: File };
+    setVisionImage: (val: { url: string; alt: string; file?: File }) => void;
     mission: string;
     setMission: (val: string) => void;
-    missionImage: { url: string; alt: string };
-    setMissionImage: (val: { url: string; alt: string }) => void;
+    missionImage: { url: string; alt: string; file?: File };
+    setMissionImage: (val: { url: string; alt: string; file?: File }) => void;
     onSave: () => void;
     onCancel: () => void;
+    isSubmitting?: boolean;
 };
 
-export default function VisionMissionEdit({
-    vision, setVision, visionImage, setVisionImage,
-    mission, setMission, missionImage, setMissionImage,
-    onSave, onCancel
-}: Props) {
-    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>, setter: (val: { url: string; alt: string }) => void, current: { url: string; alt: string }) => {
-        const file = e.target.files?.[0];
-        if (file) {
-            const reader = new FileReader();
-            reader.onloadend = () => {
-                setter({ ...current, url: reader.result as string });
-            };
-            reader.readAsDataURL(file);
-        }
-    };
-
-    const Section = ({
-        index,
-        title,
-        value,
-        setValue,
-        image,
-        onFileChange,
-        placeholder
-    }: {
-        index: string,
-        title: string,
-        value: string,
-        setValue: (v: string) => void,
-        image: { url: string, alt: string },
-        onFileChange: (e: React.ChangeEvent<HTMLInputElement>) => void,
-        placeholder: string
-    }) => (
-        <div className="bg-white rounded-3xl border border-[#E9D6C6] overflow-hidden shadow-sm">
-            <div className="px-8 py-5 bg-[#FAF4EC] border-b border-[#E9D6C6]">
-                <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 rounded-lg bg-[#7A3E2C] flex items-center justify-center text-white font-bold text-xs">{index}</div>
-                    <h3 className="font-serif font-bold text-[#1E1E1E]">{title}</h3>
-                </div>
+const Section = ({
+    index,
+    title,
+    value,
+    setValue,
+    image,
+    onFileChange,
+    placeholder,
+    disabled
+}: {
+    index: string,
+    title: string,
+    value: string,
+    setValue: (v: string) => void,
+    image: { url: string, alt: string },
+    onFileChange: (e: React.ChangeEvent<HTMLInputElement>) => void,
+    placeholder: string,
+    disabled: boolean
+}) => (
+    <div className="bg-white rounded-3xl border border-[#E9D6C6] overflow-hidden shadow-sm">
+        <div className="px-8 py-5 bg-[#FAF4EC] border-b border-[#E9D6C6]">
+            <div className="flex items-center gap-3">
+                <div className="w-8 h-8 rounded-lg bg-[#7A3E2C] flex items-center justify-center text-white font-bold text-xs">{index}</div>
+                <h3 className="font-serif font-bold text-[#1E1E1E]">{title}</h3>
             </div>
-            <div className="p-8">
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-                    {/* LEFT: Forms */}
-                    <div className="space-y-6">
-                        <div className="space-y-2">
-                            <label className="text-xs font-bold tracking-widest text-[#8B6F56] uppercase">Content Statement</label>
-                            <textarea
-                                value={value}
-                                onChange={(e) => setValue(e.target.value)}
-                                className="w-full rounded-xl border border-[#E0D4C6] px-4 py-3 text-sm h-48 resize-none focus:ring-2 focus:ring-[#7A3E2C] focus:border-transparent transition-all outline-none leading-relaxed"
-                                placeholder={placeholder}
-                            />
-                        </div>
-
-                        <div className="space-y-2 pt-2">
-                            <label className="block text-xs font-bold tracking-widest text-[#8B6F56] uppercase">
-                                Replace Section Image
-                            </label>
-                            <input
-                                type="file"
-                                accept="image/*"
-                                onChange={onFileChange}
-                                className="block w-full cursor-pointer rounded-xl border border-[#E0D4C6] bg-white px-3 py-2 text-sm text-gray-700 file:mr-4 file:rounded-lg file:border-0 file:bg-[#7A3E2C] file:px-4 file:py-2 file:text-xs file:font-bold file:uppercase file:tracking-widest file:text-white hover:file:bg-[#5C2D20] transition-all"
-                            />
-                        </div>
+        </div>
+        <div className="p-8">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+                {/* LEFT: Forms */}
+                <div className="space-y-6">
+                    <div className="space-y-2">
+                        <label className="text-xs font-bold tracking-widest text-[#8B6F56] uppercase">Content Statement</label>
+                        <textarea
+                            value={value}
+                            onChange={(e) => setValue(e.target.value)}
+                            className="w-full rounded-xl border border-[#E0D4C6] px-4 py-3 text-sm h-48 resize-none focus:ring-2 focus:ring-[#7A3E2C] focus:border-transparent transition-all outline-none leading-relaxed"
+                            placeholder={placeholder}
+                            disabled={disabled}
+                        />
                     </div>
 
-                    {/* RIGHT: Image Preview */}
-                    <div className="space-y-4">
-                        <label className="text-xs font-bold tracking-widest text-[#8B6F56] uppercase">Visual Preview</label>
-                        <div className="relative aspect-video w-full overflow-hidden rounded-2xl border border-[#E9D6C6] bg-[#FAF4EC] shadow-inner group">
-                            {image.url ? (
-                                <>
-                                    <Image
-                                        src={image.url}
-                                        alt={image.alt}
-                                        fill
-                                        className="object-cover transition-transform duration-700 group-hover:scale-105"
-                                        unoptimized={image.url.startsWith('data:')}
-                                    />
-                                    <div className="absolute inset-0 bg-black/5 group-hover:bg-transparent transition-all" />
-                                </>
-                            ) : (
-                                <div className="absolute inset-0 flex flex-col items-center justify-center text-[#7A3E2C]/30 gap-3">
-                                    <PhotoIcon className="h-16 w-16" />
-                                    <span className="text-xs font-bold uppercase tracking-[0.2em]">No Vision</span>
-                                </div>
-                            )}
-                        </div>
+                    <div className="space-y-2 pt-2">
+                        <label className="block text-xs font-bold tracking-widest text-[#8B6F56] uppercase">
+                            Replace Section Image
+                        </label>
+                        <input
+                            type="file"
+                            accept="image/*"
+                            onChange={onFileChange}
+                            className="block w-full cursor-pointer rounded-xl border border-[#E0D4C6] bg-white px-3 py-2 text-sm text-gray-700 file:mr-4 file:rounded-lg file:border-0 file:bg-[#7A3E2C] file:px-4 file:py-2 file:text-xs file:font-bold file:uppercase file:tracking-widest file:text-white hover:file:bg-[#5C2D20] transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                            disabled={disabled}
+                        />
+                    </div>
+                </div>
+
+                {/* RIGHT: Image Preview */}
+                <div className="space-y-4">
+                    <label className="text-xs font-bold tracking-widest text-[#8B6F56] uppercase">Visual Preview</label>
+                    <div className="relative aspect-video w-full overflow-hidden rounded-2xl border border-[#E9D6C6] bg-[#FAF4EC] shadow-inner group">
+                        {image.url ? (
+                            <>
+                                <Image
+                                    src={image.url}
+                                    alt={image.alt}
+                                    fill
+                                    className="object-cover transition-transform duration-700 group-hover:scale-105"
+                                    unoptimized={image.url.startsWith('data:')}
+                                />
+                                <div className="absolute inset-0 bg-black/5 group-hover:bg-transparent transition-all" />
+                            </>
+                        ) : (
+                            <div className="absolute inset-0 flex flex-col items-center justify-center text-[#7A3E2C]/30 gap-3">
+                                <PhotoIcon className="h-16 w-16" />
+                                <span className="text-xs font-bold uppercase tracking-[0.2em]">No Vision</span>
+                            </div>
+                        )}
                     </div>
                 </div>
             </div>
         </div>
-    );
+    </div>
+);
+
+export default function VisionMissionEdit({
+    vision, setVision, visionImage, setVisionImage,
+    mission, setMission, missionImage, setMissionImage,
+    onSave, onCancel,
+    isSubmitting = false
+}: Props) {
+    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>, setter: (val: { url: string; alt: string; file?: File }) => void, current: { url: string; alt: string; file?: File }) => {
+        const file = e.target.files?.[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                setter({ ...current, url: reader.result as string, file });
+            };
+            reader.readAsDataURL(file);
+        }
+    };
 
     return (
         <div id="vision-mission" className="mx-auto max-w-9xl space-y-8">
@@ -120,6 +126,7 @@ export default function VisionMissionEdit({
                 image={visionImage}
                 onFileChange={(e) => handleFileChange(e, setVisionImage, visionImage)}
                 placeholder="State the future vision..."
+                disabled={isSubmitting}
             />
 
             <Section
@@ -130,6 +137,7 @@ export default function VisionMissionEdit({
                 image={missionImage}
                 onFileChange={(e) => handleFileChange(e, setMissionImage, missionImage)}
                 placeholder="State the company mission..."
+                disabled={isSubmitting}
             />
 
             {/* ACTION BUTTONS CARD */}
@@ -138,16 +146,28 @@ export default function VisionMissionEdit({
                     <button
                         type="button"
                         onClick={onCancel}
-                        className="rounded-full border border-[#E0D4C6] px-6 py-2.5 text-xs font-bold text-gray-500 hover:bg-gray-50 transition-all uppercase tracking-widest"
+                        disabled={isSubmitting}
+                        className="rounded-full border border-[#E0D4C6] px-6 py-2.5 text-xs font-bold text-gray-500 hover:bg-gray-50 transition-all uppercase tracking-widest disabled:opacity-50"
                     >
                         Cancel
                     </button>
                     <button
                         type="button"
                         onClick={onSave}
-                        className="rounded-full bg-[#7A3E2C] px-8 py-2.5 text-xs font-bold text-white shadow-lg shadow-[#7A3E2C]/20 hover:bg-[#5C2D20] transition-all uppercase tracking-widest"
+                        disabled={isSubmitting}
+                        className="rounded-full bg-[#7A3E2C] px-8 py-2.5 text-xs font-bold text-white shadow-lg shadow-[#7A3E2C]/20 hover:bg-[#5C2D20] transition-all uppercase tracking-widest disabled:opacity-70 disabled:cursor-not-allowed flex items-center gap-2"
                     >
-                        Save Changes
+                        {isSubmitting ? (
+                            <>
+                                <svg className="animate-spin h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                </svg>
+                                Saving...
+                            </>
+                        ) : (
+                            'Save Changes'
+                        )}
                     </button>
                 </div>
             </div>

@@ -1,18 +1,36 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import BreadCrumbs, { BreadCrumbItem } from '@/components/Common/Breadcrumbs';
 import ClosingEdit from '@/components/BrandEthos/Edit/ClosingEdit';
-import { brandEthosResponse } from '@/data/BrandEthos';
-import { ChevronRightIcon } from '@heroicons/react/24/outline';
+import { getBrandEthos, updateClosingStatement } from '@/services/BrandEthosService';
+import BrandEthosFormSkeleton from '@/components/BrandEthos/BrandEthosFormSkeleton';
 
 export default function Page() {
     const router = useRouter();
-    const data = brandEthosResponse.data;
+    const [loading, setLoading] = useState(true);
+    const [saving, setSaving] = useState(false);
 
-    const [label, setLabel] = useState(data.closingStatement.label);
-    const [text, setText] = useState(data.closingStatement.text);
+    const [label, setLabel] = useState('');
+    const [text, setText] = useState('');
+
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const data = await getBrandEthos();
+                if (data) {
+                    setLabel(data.closingLabel || '');
+                    setText(data.closingStatement || '');
+                }
+            } catch (error) {
+                console.error('Failed to fetch closing statement:', error);
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchData();
+    }, []);
 
     const breadcrumbItems: BreadCrumbItem[] = [
         { name: 'Home', href: '/beranda' },
@@ -20,10 +38,23 @@ export default function Page() {
         { name: 'Edit Closing', disabled: true },
     ];
 
-    const handleSave = () => {
-        console.log('SAVING CLOSING:', { label, text });
-        router.push('/beranda/brand-ethos');
+    const handleSave = async () => {
+        setSaving(true);
+        try {
+            await updateClosingStatement({
+                closingLabel: label,
+                closingStatement: text
+            });
+            router.push('/beranda/brand-ethos');
+        } catch (error) {
+            console.error('Failed to update closing statement:', error);
+            alert('Failed to save changes');
+        } finally {
+            setSaving(false);
+        }
     };
+
+    if (loading) return <BrandEthosFormSkeleton />;
 
     return (
         <div className="space-y-6">
@@ -38,6 +69,7 @@ export default function Page() {
                 text={text} setText={setText}
                 onSave={handleSave}
                 onCancel={() => router.push('/beranda/brand-ethos')}
+                isSubmitting={saving}
             />
         </div>
     );

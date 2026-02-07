@@ -7,6 +7,14 @@ const nextConfig: NextConfig = {
         protocol: "https",
         hostname: "res.cloudinary.com",
       },
+      {
+        protocol: "https",
+        hostname: "cdn.mycoffee.com",
+      },
+      {
+        protocol: "https",
+        hostname: "api.kunjungfamily.site",
+      },
     ],
   },
 };

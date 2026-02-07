@@ -25,10 +25,10 @@ export default function Page() {
                 console.warn('Failed to fetch brand statement from API, using fallback data:', error);
                 const fallbackData: BrandStatementApiResponse = {
                     id: 'fallback-id',
-                    titleStatement: brandStatementData.title,
-                    subTitleStatement: brandStatementData.subtitle,
-                    locationStatementLeft: brandStatementData.locationLeft,
-                    locationStatementRight: brandStatementData.locationRight,
+                    titleStatement: brandStatementData.titleStatement,
+                    subTitleStatement: brandStatementData.subTitleStatement,
+                    locationStatementLeft: brandStatementData.locationStatementLeft,
+                    locationStatementRight: brandStatementData.locationStatementRight,
                 };
                 setData(fallbackData);
             } finally {

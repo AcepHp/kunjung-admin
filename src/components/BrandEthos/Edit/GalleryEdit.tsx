@@ -2,7 +2,7 @@ import { useRef, useState } from 'react';
 import Image from 'next/image';
 import { PhotoIcon, ArrowPathIcon, PlusIcon, TrashIcon } from '@heroicons/react/24/outline';
 
-type ImageItem = { url: string; alt?: string };
+type ImageItem = { id?: string; url: string; alt?: string; file?: File };
 
 type Props = {
     images: ImageItem[];
@@ -27,7 +27,12 @@ export default function GalleryEdit({ images, setImages, onSave, onCancel }: Pro
             const reader = new FileReader();
             reader.onloadend = () => {
                 const newImages = [...images];
-                newImages[activeIndex] = { ...newImages[activeIndex], url: reader.result as string };
+                // Update URL and add file object, PRESERVE existing ID
+                newImages[activeIndex] = {
+                    ...newImages[activeIndex],
+                    url: reader.result as string,
+                    file: file
+                };
                 setImages(newImages);
                 setActiveIndex(null);
             };
@@ -41,7 +46,7 @@ export default function GalleryEdit({ images, setImages, onSave, onCancel }: Pro
             files.forEach(file => {
                 const reader = new FileReader();
                 reader.onloadend = () => {
-                    setImages([...images, { url: reader.result as string }]);
+                    setImages([...images, { url: reader.result as string, file }]);
                 };
                 reader.readAsDataURL(file);
             });
@@ -131,7 +136,7 @@ export default function GalleryEdit({ images, setImages, onSave, onCancel }: Pro
                         className="hidden"
                     />
 
-                    
+
                 </div>
                 <div className="p-8 flex items-center justify-end gap-3">
                     <button

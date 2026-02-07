@@ -15,6 +15,7 @@ type Props = {
     setCorePrinciples: (val: string[]) => void;
     onSave: () => void;
     onCancel: () => void;
+    isSubmitting?: boolean;
 };
 
 export default function IntroductionEdit({
@@ -23,7 +24,8 @@ export default function IntroductionEdit({
     subtitle, setSubtitle,
     description, setDescription,
     corePrinciples, setCorePrinciples,
-    onSave, onCancel
+    onSave, onCancel,
+    isSubmitting = false
 }: Props) {
     const handlePrincipleChange = (index: number, value: string) => {
         const newPrinciples = [...corePrinciples];
@@ -50,6 +52,7 @@ export default function IntroductionEdit({
                                 onChange={(e) => setLabel(e.target.value)}
                                 className="w-full rounded-xl border border-[#E0D4C6] px-4 py-3 text-sm focus:ring-2 focus:ring-[#7A3E2C] focus:border-transparent transition-all outline-none"
                                 placeholder="e.g. KUNJUNG Family"
+                                disabled={isSubmitting}
                             />
                         </div>
                         <div className="space-y-2">
@@ -59,6 +62,7 @@ export default function IntroductionEdit({
                                 onChange={(e) => setTitle(e.target.value)}
                                 className="w-full rounded-xl border border-[#E0D4C6] px-4 py-3 text-sm focus:ring-2 focus:ring-[#7A3E2C] focus:border-transparent transition-all outline-none font-bold"
                                 placeholder="Enter headline..."
+                                disabled={isSubmitting}
                             />
                         </div>
                         <div className="space-y-2">
@@ -68,6 +72,7 @@ export default function IntroductionEdit({
                                 onChange={(e) => setSubtitle(e.target.value)}
                                 className="w-full rounded-xl border border-[#E0D4C6] px-4 py-3 text-sm focus:ring-2 focus:ring-[#7A3E2C] focus:border-transparent transition-all outline-none italic"
                                 placeholder="Enter subtitle..."
+                                disabled={isSubmitting}
                             />
                         </div>
                     </div>
@@ -81,6 +86,7 @@ export default function IntroductionEdit({
                                 onChange={(e) => setDescription(e.target.value)}
                                 className="w-full rounded-xl border border-[#E0D4C6] px-4 py-3 text-sm h-40 resize-none focus:ring-2 focus:ring-[#7A3E2C] focus:border-transparent transition-all outline-none leading-relaxed"
                                 placeholder="Enter description..."
+                                disabled={isSubmitting}
                             />
                         </div>
                         <div className="space-y-3 pt-2">
@@ -93,6 +99,7 @@ export default function IntroductionEdit({
                                         onChange={(e) => handlePrincipleChange(idx, e.target.value)}
                                         className="w-full rounded-xl border border-[#E0D4C6] px-4 py-2.5 text-xs focus:ring-2 focus:ring-[#7A3E2C] focus:border-transparent transition-all outline-none italic font-serif"
                                         placeholder={`Principle ${idx + 1}`}
+                                        disabled={isSubmitting}
                                     />
                                 ))}
                             </div>
@@ -105,16 +112,28 @@ export default function IntroductionEdit({
                     <button
                         type="button"
                         onClick={onCancel}
-                        className="rounded-full border border-[#E0D4C6] px-6 py-2.5 text-xs font-bold text-gray-500 hover:bg-gray-50 transition-all uppercase tracking-widest"
+                        disabled={isSubmitting}
+                        className="rounded-full border border-[#E0D4C6] px-6 py-2.5 text-xs font-bold text-gray-500 hover:bg-gray-50 transition-all uppercase tracking-widest disabled:opacity-50"
                     >
                         Cancel
                     </button>
                     <button
                         type="button"
                         onClick={onSave}
-                        className="rounded-full bg-[#7A3E2C] px-8 py-2.5 text-xs font-bold text-white shadow-lg shadow-[#7A3E2C]/20 hover:bg-[#5C2D20] transition-all uppercase tracking-widest"
+                        disabled={isSubmitting}
+                        className="rounded-full bg-[#7A3E2C] px-8 py-2.5 text-xs font-bold text-white shadow-lg shadow-[#7A3E2C]/20 hover:bg-[#5C2D20] transition-all uppercase tracking-widest disabled:opacity-70 disabled:cursor-not-allowed flex items-center gap-2"
                     >
-                        Save Changes
+                        {isSubmitting ? (
+                            <>
+                                <svg className="animate-spin h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                </svg>
+                                Saving...
+                            </>
+                        ) : (
+                            'Save Changes'
+                        )}
                     </button>
                 </div>
             </div>
