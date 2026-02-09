@@ -15,10 +15,10 @@ export default function TncSection({ data }: Props) {
             <div className="flex items-center justify-between bg-[#FBF6F0] px-6 py-4">
                 <div>
                     <h2 className="text-sm font-semibold text-gray-800">
-                        {data.title}
+                        Terms & Conditions content
                     </h2>
                     <p className="text-xs text-gray-500">
-                        {data.description}
+                        Manage your Terms & Conditions, Refund Policy, and Agreement Text.
                     </p>
                 </div>
 
@@ -32,30 +32,41 @@ export default function TncSection({ data }: Props) {
 
             {/* CONTENT */}
             <div className="space-y-6 px-6 py-6">
-                {data.sections.map((section) => (
+                {/* TRANSACTION TERMS */}
+                <div className="rounded-lg border border-[#EFE3D7] bg-[#FAF4EC]/40 p-4">
+                    <h3 className="mb-3 text-sm font-semibold text-gray-800">
+                        Transaction Terms
+                    </h3>
                     <div
-                        key={section.id}
-                        className="rounded-lg border border-[#EFE3D7] bg-[#FAF4EC]/40 p-4"
-                    >
-                        <h3 className="mb-3 text-sm font-semibold text-gray-800">
-                            {section.title}
-                        </h3>
+                        className="prose prose-sm max-w-none text-gray-700"
+                        dangerouslySetInnerHTML={{
+                            __html: data.transactionTerms,
+                        }}
+                    />
+                </div>
 
-                        <div
-                            className="prose prose-sm max-w-none text-gray-700"
-                            dangerouslySetInnerHTML={{
-                                __html: section.content,
-                            }}
-                        />
-                    </div>
-                ))}
+                {/* REFUND POLICY */}
+                <div className="rounded-lg border border-[#EFE3D7] bg-[#FAF4EC]/40 p-4">
+                    <h3 className="mb-3 text-sm font-semibold text-gray-800">
+                        Refund & Cancellation Policy
+                    </h3>
+                    <div
+                        className="prose prose-sm max-w-none text-gray-700"
+                        dangerouslySetInnerHTML={{
+                            __html: data.refundCancellationPolicy,
+                        }}
+                    />
+                </div>
 
                 {/* AGREEMENT */}
                 <div className="rounded-lg border border-[#EFE3D7] bg-[#FAF4EC]/40 p-4">
+                    <h3 className="mb-3 text-sm font-semibold text-gray-800">
+                        Agreement Text
+                    </h3>
                     <div
                         className="prose prose-xs max-w-none text-gray-700"
                         dangerouslySetInnerHTML={{
-                            __html: data.agreementHtml,
+                            __html: data.agreementText,
                         }}
                     />
                 </div>

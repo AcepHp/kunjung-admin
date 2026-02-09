@@ -1,12 +1,9 @@
-import { notFound } from "next/navigation";
 import BreadCrumbs, {
     BreadCrumbItem,
 } from "@/components/Common/Breadcrumbs";
-import {
-    heroSectionDummy,
-    type HeroSlide,
-} from "@/data/HeroSectionData";
+import { getHeroSlideById } from "@/services/HeroSectionService";
 import EditHeroSlideForm from "@/components/DisplayManage/HeroSection/EditHeroSlideForm";
+import { notFound } from "next/navigation";
 
 type PageProps = {
     params: Promise<{
@@ -15,14 +12,18 @@ type PageProps = {
 };
 
 export default async function EditHeroSlidePage({ params }: PageProps) {
-    // Next 15: params is a Promise
     const { id } = await params;
 
-    const slides: HeroSlide[] = heroSectionDummy.data.heroSection.slides;
-    const slide = slides.find((s) => s.id === id);
+    let slide;
+    try {
+        slide = await getHeroSlideById(id);
+    } catch (error) {
+        console.error("Error fetching slide for edit:", error);
+        return notFound();
+    }
 
     if (!slide) {
-        notFound();
+        return notFound();
     }
 
     const breadcrumbItems: BreadCrumbItem[] = [
@@ -33,14 +34,12 @@ export default async function EditHeroSlidePage({ params }: PageProps) {
 
     return (
         <div className="space-y-6">
-            {/* Header + Breadcrumb */}
             <BreadCrumbs
                 items={breadcrumbItems}
                 title="Edit Hero Slide"
-                description={`Update hero slide for "${slide.villaName}".`}
+                description={`Update hero slide for "${slide.title}".`}
             />
 
-            {/* Edit Form */}
             <EditHeroSlideForm slide={slide} />
         </div>
     );

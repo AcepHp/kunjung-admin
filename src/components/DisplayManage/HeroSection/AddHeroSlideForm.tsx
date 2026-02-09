@@ -1,135 +1,161 @@
 'use client';
 
 import { FormEvent, useState } from 'react';
+import Image from 'next/image';
+import { createHeroSlide } from '@/services/HeroSectionService';
+import { useRouter } from 'next/navigation';
+
+interface SlideData {
+    title: string;
+    subtitle: string;
+    imageFile: File | null;
+    imageUrl: string;
+    status: boolean;
+}
 
 export default function AddHeroSlideForm() {
-    const [villaName, setVillaName] = useState('');
-    const [villaSubtitle, setVillaSubtitle] = useState('');
-    const [imageFile, setImageFile] = useState<File | null>(null);
-    const [status, setStatus] = useState<'active' | 'inactive'>('active');
+    const router = useRouter();
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [slides, setSlides] = useState<SlideData[]>(
+        Array(4).fill(null).map(() => ({
+            title: '',
+            subtitle: '',
+            imageFile: null,
+            imageUrl: '',
+            status: true,
+        }))
+    );
 
-    const handleSubmit = (e: FormEvent) => {
+    const handleUpdateSlide = (index: number, updates: Partial<SlideData>) => {
+        const newSlides = [...slides];
+        newSlides[index] = { ...newSlides[index], ...updates };
+        setSlides(newSlides);
+    };
+
+    const handleImageChange = (index: number, file: File | null) => {
+        if (file) {
+            const url = URL.createObjectURL(file);
+            handleUpdateSlide(index, { imageFile: file, imageUrl: url });
+        } else {
+            handleUpdateSlide(index, { imageFile: null, imageUrl: '' });
+        }
+    };
+
+    const handleSubmit = async (e: FormEvent) => {
         e.preventDefault();
-        // Placeholder, belum ada logic simpan beneran
-        console.log({
-            villaName,
-            villaSubtitle,
-            imageFile,
-            status,
-        });
+
+        // Ensure each slide to save has both title and image
+        const slidesToSave = slides.filter(s => s.title.trim() !== '' && s.imageFile !== null);
+
+        if (slidesToSave.length === 0) {
+            alert("Please fill in both Villa Title and Hero Image for at least one slide.");
+            return;
+        }
+
+        setIsSubmitting(true);
+
+        try {
+            // Upload items one by one for better stability with Multipart/FormData
+            for (let i = 0; i < slidesToSave.length; i++) {
+                const slide = slidesToSave[i];
+                const formData = new FormData();
+                formData.append('title', slide.title);
+                formData.append('subtitle', slide.subtitle);
+                // Based on user's image, status should be exactly 'true' or 'false' (string)
+                // Forced to 'true' per user request
+                formData.append('status', 'true');
+                if (slide.imageFile) {
+                    formData.append('image', slide.imageFile);
+                }
+                await createHeroSlide(formData);
+            }
+
+            alert("All slides saved successfully!");
+            // Using window.location to force a full refresh on navigation
+            window.location.assign('/beranda/display/hero');
+        } catch (error) {
+            console.error("Failed to save slides:", error);
+            alert("Failed to save some slides. Please ensure all mandatory fields are filled.");
+        } finally {
+            setIsSubmitting(false);
+        }
     };
 
     return (
-        <section className="rounded-2xl border border-[#E9D6C6] bg-white p-5 sm:p-6 shadow-sm">
-            {/* Header */}
-            <div className="mb-4 flex items-start justify-between gap-3">
-                <div>
-                    <h2 className="text-base sm:text-lg font-semibold text-[#2E2620]">
-                        Add Hero Slide
-                    </h2>
-                    <p className="mt-1 text-xs sm:text-sm text-gray-500">
-                        Create a new hero slide for the homepage.
-                    </p>
-                </div>
+        <form onSubmit={handleSubmit} className="space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {slides.map((slide, index) => (
+                    <section key={index} className="rounded-2xl border border-[#E9D6C6] bg-white p-5 shadow-sm space-y-4">
+                        <div className="flex items-center justify-between border-b border-[#F6EAE0] pb-2">
+                            <h3 className="text-sm font-bold text-[#7A3E2C]">Slide {index + 1}</h3>
+                        </div>
+
+                        <div className="space-y-3">
+                            {/* Title */}
+                            <div>
+                                <label className="block text-[11px] font-semibold text-gray-600 mb-1">Villa Title</label>
+                                <input
+                                    type="text"
+                                    value={slide.title}
+                                    onChange={(e) => handleUpdateSlide(index, { title: e.target.value })}
+                                    className="w-full rounded-lg border border-[#E0D4C6] px-3 py-2 text-sm focus:border-[#7A3E2C] focus:ring-1 focus:ring-[#7A3E2C] outline-none transition"
+                                    placeholder="e.g. Elysium Retreat"
+                                />
+                            </div>
+
+                            {/* Subtitle */}
+                            <div>
+                                <label className="block text-[11px] font-semibold text-gray-600 mb-1">Subtitle</label>
+                                <input
+                                    type="text"
+                                    value={slide.subtitle}
+                                    onChange={(e) => handleUpdateSlide(index, { subtitle: e.target.value })}
+                                    className="w-full rounded-lg border border-[#E0D4C6] px-3 py-2 text-sm focus:border-[#7A3E2C] focus:ring-1 focus:ring-[#7A3E2C] outline-none transition"
+                                    placeholder="e.g. Modern Comfort..."
+                                />
+                            </div>
+
+                            {/* Image Upload */}
+                            <div>
+                                <label className="block text-[11px] font-semibold text-gray-600 mb-1">Hero Image</label>
+                                <div className="flex items-center gap-3">
+                                    <div className="relative h-16 w-24 flex-shrink-0 overflow-hidden rounded-lg border border-[#E0D4C6] bg-[#FAF4EC]">
+                                        {slide.imageUrl ? (
+                                            <Image src={slide.imageUrl} alt={`Slide ${index + 1}`} fill className="object-cover" unoptimized />
+                                        ) : (
+                                            <div className="flex h-full items-center justify-center text-[10px] text-gray-400">No Image</div>
+                                        )}
+                                    </div>
+                                    <input
+                                        type="file"
+                                        accept="image/*"
+                                        onChange={(e) => handleImageChange(index, e.target.files?.[0] ?? null)}
+                                        className="text-xs file:mr-2 file:rounded-full file:border-0 file:bg-[#F6EAE0] file:px-3 file:py-1 file:text-[10px] file:font-semibold file:text-[#7A3E2C] hover:file:bg-[#E9D6C6] cursor-pointer"
+                                    />
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                ))}
             </div>
 
-            {/* Form */}
-            <form onSubmit={handleSubmit} className="space-y-5">
-                {/* Status */}
-                <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-                    <label className="text-xs font-medium text-gray-600">
-                        Status
-                    </label>
-                    <div className="inline-flex rounded-full bg-[#F6EAE0] p-1">
-                        <button
-                            type="button"
-                            onClick={() => setStatus('active')}
-                            className={[
-                                'px-3 py-1 text-xs font-medium rounded-full transition',
-                                status === 'active'
-                                    ? 'bg-white text-[#7A3E2C] shadow-sm'
-                                    : 'text-gray-500',
-                            ].join(' ')}
-                        >
-                            Active
-                        </button>
-                        <button
-                            type="button"
-                            onClick={() => setStatus('inactive')}
-                            className={[
-                                'px-3 py-1 text-xs font-medium rounded-full transition',
-                                status === 'inactive'
-                                    ? 'bg-white text-[#7A3E2C] shadow-sm'
-                                    : 'text-gray-500',
-                            ].join(' ')}
-                        >
-                            Inactive
-                        </button>
-                    </div>
-                </div>
-
-                {/* Villa name */}
-                <div>
-                    <label className="block text-xs font-medium text-gray-600">
-                        Villa Name
-                    </label>
-                    <input
-                        type="text"
-                        value={villaName}
-                        onChange={(e) => setVillaName(e.target.value)}
-                        className="mt-1 block w-full rounded-md border border-[#E0D4C6] px-3 py-2 text-sm text-gray-900 placeholder:text-gray-400 focus:border-[#7A3E2C] focus:outline-none focus:ring-1 focus:ring-[#7A3E2C]"
-                        placeholder="e.g. Silas House"
-                    />
-                </div>
-
-                {/* Villa subtitle */}
-                <div>
-                    <label className="block text-xs font-medium text-gray-600">
-                        Villa Subtitle
-                    </label>
-                    <input
-                        type="text"
-                        value={villaSubtitle}
-                        onChange={(e) => setVillaSubtitle(e.target.value)}
-                        className="mt-1 block w-full rounded-md border border-[#E0D4C6] px-3 py-2 text-sm text-gray-900 placeholder:text-gray-400 focus:border-[#7A3E2C] focus:outline-none focus:ring-1 focus:ring-[#7A3E2C]"
-                        placeholder="Short tagline for the villa"
-                    />
-                </div>
-
-                {/* Image upload (full width, tanpa alt text) */}
-                <div>
-                    <label className="block text-xs font-medium text-gray-600">
-                        Hero Image (Upload)
-                    </label>
-                    <input
-                        type="file"
-                        accept="image/*"
-                        onChange={(e) =>
-                            setImageFile(e.target.files?.[0] ?? null)
-                        }
-                        className="mt-1 block w-full cursor-pointer rounded-md border border-[#E0D4C6] bg-white px-3 py-2 text-xs sm:text-sm text-gray-700 file:mr-3 file:rounded-md file:border-0 file:bg-[#7A3E2C] file:px-3 file:py-1.5 file:text-xs file:font-medium file:text-white hover:file:bg-[#5C2D20]"
-                    />
-                    <p className="mt-1 text-[11px] text-gray-400">
-                        Recommended ratio 16:9. JPG or PNG.
-                    </p>
-                </div>
-
-                {/* Buttons */}
-                <div className="mt-4 flex items-center justify-end gap-2">
-                    <button
-                        type="button"
-                        className="rounded-full border border-[#E0D4C6] px-4 py-1.5 text-xs font-medium text-gray-600 hover:bg-gray-50 transition"
-                    >
-                        Cancel
-                    </button>
-                    <button
-                        type="submit"
-                        className="rounded-full bg-[#7A3E2C] px-5 py-1.5 text-xs font-medium text-white hover:bg-[#5C2D20] transition"
-                    >
-                        Save Slide
-                    </button>
-                </div>
-            </form>
-        </section>
+            <div className="flex items-center justify-end gap-3 pt-4">
+                <button
+                    type="button"
+                    onClick={() => router.back()}
+                    disabled={isSubmitting}
+                    className="rounded-full border border-[#E0D4C6] px-6 py-2 text-sm font-medium text-gray-600 hover:bg-gray-50 transition disabled:opacity-50"
+                >
+                    Cancel
+                </button>
+                <button
+                    type="submit"
+                    disabled={isSubmitting}
+                    className="rounded-full bg-[#7A3E2C] px-8 py-2 text-sm font-bold text-white shadow-md hover:bg-[#5C2D20] transition active:scale-95 disabled:bg-gray-400 disabled:cursor-not-allowed"
+                >
+                    {isSubmitting ? 'Saving...' : 'Save All 4 Slides'}
+                </button>
+            </div>
+        </form>
     );
 }

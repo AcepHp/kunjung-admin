@@ -15,16 +15,16 @@ export default function BrandStoryEditSection({
     onCancel,
     onSave,
 }: Props) {
-    const [brandName, setBrandName] = useState(initialData.brandName);
-    const [headline, setHeadline] = useState(initialData.headlineStory);
-    const [subHeadline, setSubHeadline] = useState(initialData.subHeadlineStory);
-    const [description, setDescription] = useState(initialData.descriptionStory);
+    const [brandName, setBrandName] = useState(initialData.brandName || '');
+    const [headline, setHeadline] = useState(initialData.headlineStory || '');
+    const [subHeadline, setSubHeadline] = useState(initialData.subHeadlineStory || '');
+    const [description, setDescription] = useState(initialData.descriptionStory || '');
 
     useEffect(() => {
-        setBrandName(initialData.brandName);
-        setHeadline(initialData.headlineStory);
-        setSubHeadline(initialData.subHeadlineStory);
-        setDescription(initialData.descriptionStory);
+        setBrandName(initialData.brandName || '');
+        setHeadline(initialData.headlineStory || '');
+        setSubHeadline(initialData.subHeadlineStory || '');
+        setDescription(initialData.descriptionStory || '');
     }, [initialData]);
 
     const handleSave = () => {

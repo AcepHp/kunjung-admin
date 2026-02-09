@@ -2,31 +2,34 @@
 
 import { useMemo, useState } from 'react';
 import Image from 'next/image';
-import { HeroSlide } from '../../../data/HeroSectionData';
 import {
     PencilSquareIcon,
     ArrowsUpDownIcon,
     TrashIcon,
     EyeIcon,
+    PlusIcon
 } from '@heroicons/react/24/outline';
 import Pagination from '@/components/Common/Pagination';
 import TableSearch from '@/components/Common/TableSearch';
 import Link from 'next/link';
+import { HeroSlideApiResponse } from '@/services/HeroSectionService';
+import HeroTableSkeleton from './HeroTableSkeleton';
 
 type Props = {
-    slides: HeroSlide[];
+    slides: HeroSlideApiResponse[];
+    isLoading?: boolean;
 };
 
 type SortKey = 'order' | 'villa' | 'status';
 type SortDirection = 'asc' | 'desc';
 
-export default function HeroTable({ slides }: Props) {
+export default function HeroTable({ slides, isLoading }: Props) {
     const [sortConfig, setSortConfig] = useState<{
         key: SortKey;
         direction: SortDirection;
     }>({
         key: 'order',
-        direction: 'asc',
+        direction: 'desc',
     });
 
     const [page, setPage] = useState(1);
@@ -52,12 +55,11 @@ export default function HeroTable({ slides }: Props) {
 
         const filtered = term
             ? slides.filter((s) => {
-                const name = s.villaName.toLowerCase();
-                const subtitle = s.villaSubtitle.toLowerCase();
+                const name = s.title.toLowerCase();
+                const subtitle = s.subtitle.toLowerCase();
                 return (
                     name.includes(term) ||
-                    subtitle.includes(term) ||
-                    s.order.toString().includes(term)
+                    subtitle.includes(term)
                 );
             })
             : slides;
@@ -69,16 +71,17 @@ export default function HeroTable({ slides }: Props) {
 
             switch (key) {
                 case 'order':
-                    aVal = a.order;
-                    bVal = b.order;
+                    // API doesn't have order, let's use createdAt or just 0
+                    aVal = a.createdAt;
+                    bVal = b.createdAt;
                     break;
                 case 'villa':
-                    aVal = a.villaName.toLowerCase();
-                    bVal = b.villaName.toLowerCase();
+                    aVal = a.title.toLowerCase();
+                    bVal = b.title.toLowerCase();
                     break;
                 case 'status':
-                    aVal = a.isActive ? 1 : 0;
-                    bVal = b.isActive ? 1 : 0;
+                    aVal = a.status ? 1 : 0;
+                    bVal = b.status ? 1 : 0;
                     break;
             }
 
@@ -133,6 +136,8 @@ export default function HeroTable({ slides }: Props) {
         );
     };
 
+    if (isLoading) return <HeroTableSkeleton />;
+
     return (
         <section className="rounded-2xl border border-[#E9D6C6] bg-white shadow-sm">
             {/* Header + Search */}
@@ -147,14 +152,8 @@ export default function HeroTable({ slides }: Props) {
                 </div>
 
                 <div className="flex w-full items-center justify-end gap-2 sm:w-auto">
-                    <TableSearch
-                        value={search}
-                        onChange={(val) => {
-                            setSearch(val);
-                            setPage(1);
-                        }}
-                        placeholder="Search slides..."
-                    />
+                    
+                    
                 </div>
             </div>
 
@@ -168,7 +167,6 @@ export default function HeroTable({ slides }: Props) {
                             <th className="px-6 py-3 text-center text-xs font-semibold uppercase tracking-wide text-[#8B6F56]">
                                 Image
                             </th>
-                            <SortHeader label="Status" sortKey="status" />
                             <th className="px-6 py-3 text-center text-xs font-semibold uppercase tracking-wide text-[#8B6F56]">
                                 Action
                             </th>
@@ -176,84 +174,101 @@ export default function HeroTable({ slides }: Props) {
                     </thead>
 
                     <tbody className="divide-y divide-[#EFE3D7]">
-                        {paginatedSlides.map((slide) => (
-                            <tr
-                                key={slide.id}
-                                className="hover:bg-[#FAF4EC]/50 transition"
-                            >
-                                <td className="px-6 py-4 font-medium text-[#2E2620]">
-                                    {slide.order}
-                                </td>
+                        {paginatedSlides.length > 0 ? (
+                            paginatedSlides.map((slide, index) => (
+                                <tr
+                                    key={slide.id}
+                                    className="hover:bg-[#FAF4EC]/50 transition"
+                                >
+                                    <td className="px-6 py-4 font-medium text-[#2E2620]">
+                                        {index + 1}
+                                    </td>
 
-                                <td className="px-6 py-4">
-                                    <p className="font-semibold text-[#2E2620]">
-                                        {slide.villaName}
-                                    </p>
-                                    <p className="mt-0.5 text-xs text-gray-500">
-                                        {slide.villaSubtitle}
-                                    </p>
-                                </td>
+                                    <td className="px-6 py-4">
+                                        <p className="font-semibold text-[#2E2620]">
+                                            {slide.title}
+                                        </p>
+                                        <p className="mt-0.5 text-xs text-gray-500">
+                                            {slide.subtitle}
+                                        </p>
+                                    </td>
 
-                                <td className="px-6 py-4 align-middle">
-                                    <div className="flex justify-center items-center">
-                                        <div className="relative h-12 w-20 overflow-hidden rounded-lg border">
-                                            <Image
-                                                src={slide.image.url}
-                                                alt={slide.image.alt}
-                                                fill
-                                                className="object-cover"
-                                            />
+                                    <td className="px-6 py-4 align-middle">
+                                        <div className="flex justify-center items-center">
+                                            <div className="relative h-12 w-20 overflow-hidden rounded-lg border">
+                                                <Image
+                                                    src={slide.imageUrl}
+                                                    alt={slide.title}
+                                                    fill
+                                                    className="object-cover"
+                                                />
+                                            </div>
                                         </div>
-                                    </div>
-                                </td>
+                                    </td>
 
 
-                                <td className="px-6 py-4">
-                                    <span
-                                        className={`inline-flex rounded-full px-2.5 py-0.5 text-xs font-medium ${slide.isActive
-                                            ? 'bg-green-50 text-green-700'
-                                            : 'bg-gray-100 text-gray-600'
-                                            }`}
-                                    >
-                                        {slide.isActive ? 'Active' : 'Inactive'}
-                                    </span>
-                                </td>
+                                    
 
-                                <td className="px-6 py-4 align-middle">
-                                    <div className="flex justify-center items-center gap-2">
-                                        {/* Detail */}
-                                        <Link href={`/beranda/display/hero/${slide.id}`}>
+                                    <td className="px-6 py-4 align-middle">
+                                        <div className="flex justify-center items-center gap-2">
+                                            {/* Detail */}
+                                            <Link href={`/beranda/display/hero/${slide.id}`}>
+                                                <button
+                                                    type="button"
+                                                    className="inline-flex items-center gap-1.5 rounded-md border border-[#E2C9B4] px-3 py-1.5 text-xs font-medium text-[#7A3E2C] hover:bg-[#F7EBE1] transition"
+                                                >
+                                                    <EyeIcon className="h-4 w-4" />
+                                                    Detail
+                                                </button>
+                                            </Link>
+
+
+                                            {/* Edit */}
+                                            <Link href={`/beranda/display/hero/${slide.id}/edit-slide`}>
+                                                <button
+                                                    type="button"
+                                                    className="inline-flex items-center gap-1.5 rounded-md border border-[#E2C9B4] px-3 py-1.5 text-xs font-medium text-[#7A3E2C] hover:bg-[#F7EBE1] transition"
+                                                >
+                                                    <PencilSquareIcon className="h-4 w-4" />
+                                                    Edit
+                                                </button>
+                                            </Link>
+
+                                        </div>
+                                    </td>
+                                </tr>
+                            ))
+                        ) : (
+                            <tr>
+                                <td colSpan={5} className="px-6 py-10 text-center">
+                                    <div className="flex flex-col items-center justify-center gap-2">
+                                        <p className="text-gray-500">No slides found.</p>
+                                        <Link href="/beranda/display/hero/add-slide">
                                             <button
                                                 type="button"
-                                                className="inline-flex items-center gap-1.5 rounded-md border border-[#E2C9B4] px-3 py-1.5 text-xs font-medium text-[#7A3E2C] hover:bg-[#F7EBE1] transition"
+                                                className="inline-flex items-center gap-2 rounded-lg bg-[#7A3E2C] px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-[#5C2D20] transition"
                                             >
-                                                <EyeIcon className="h-4 w-4" />
-                                                Detail
+                                                <PlusIcon className="h-5 w-5" />
+                                                Add Your First Slide
                                             </button>
                                         </Link>
-
-
-                                        {/* Edit */}
-                                        <Link href={`/beranda/display/hero/${slide.id}/edit-slide`}>
-                                            <button
-                                                type="button"
-                                                className="inline-flex items-center gap-1.5 rounded-md border border-[#E2C9B4] px-3 py-1.5 text-xs font-medium text-[#7A3E2C] hover:bg-[#F7EBE1] transition"
-                                            >
-                                                <PencilSquareIcon className="h-4 w-4" />
-                                                Edit
-                                            </button>
-                                        </Link>
-
                                     </div>
                                 </td>
-
-
                             </tr>
-                        ))}
+                        )}
                     </tbody>
                 </table>
             </div>
 
+            {/* Footer / Pagination */}
+            <div className="border-t border-[#EFE3D7] px-6 py-4">
+                <Pagination
+                    page={page}
+                    total={processedSlides.length}
+                    pageSize={pageSize}
+                    onPageChange={setPage}
+                />
+            </div>
         </section>
     );
 }

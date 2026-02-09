@@ -1,21 +1,38 @@
 'use client';
 
 import { FormEvent, useState, useEffect } from 'react';
-import type { HeroSlide } from '@/data/HeroSectionData';
+import { HeroSlideApiResponse, updateHeroSlide } from '@/services/HeroSectionService';
 import Image from 'next/image';
+import { useRouter } from 'next/navigation';
 
 type Props = {
-    slide: HeroSlide;
+    slide: HeroSlideApiResponse;
 };
 
 export default function EditHeroSlideForm({ slide }: Props) {
-    const [villaName, setVillaName] = useState(slide.villaName);
-    const [villaSubtitle, setVillaSubtitle] = useState(slide.villaSubtitle);
+    const router = useRouter();
+    const [title, setTitle] = useState(slide.title);
+    const [subtitle, setSubtitle] = useState(slide.subtitle);
     const [imageFile, setImageFile] = useState<File | null>(null);
-    const [previewUrl, setPreviewUrl] = useState<string>(slide.image.url);
-    const [status, setStatus] = useState<'active' | 'inactive'>(
-        slide.isActive ? 'active' : 'inactive'
-    );
+    const [previewUrl, setPreviewUrl] = useState<string>(slide.imageUrl || '');
+    const [isSaving, setIsSaving] = useState(false);
+
+    useEffect(() => {
+        const fetchImageAsFile = async () => {
+            if (!slide.imageUrl) return;
+            try {
+                const response = await fetch(slide.imageUrl);
+                const blob = await response.blob();
+                const fileName = slide.imageUrl.split('/').pop() || 'existing-image.jpg';
+                const file = new File([blob], fileName, { type: blob.type });
+                setImageFile(file);
+            } catch (error) {
+                console.error("Error converting existing image to file:", error);
+            }
+        };
+
+        fetchImageAsFile();
+    }, [slide.imageUrl]);
 
     useEffect(() => {
         if (!imageFile) return;
@@ -24,16 +41,37 @@ export default function EditHeroSlideForm({ slide }: Props) {
         return () => URL.revokeObjectURL(objectUrl);
     }, [imageFile]);
 
-    const handleSubmit = (e: FormEvent) => {
+    const handleSubmit = async (e: FormEvent) => {
         e.preventDefault();
-        // Placeholder: no real save logic yet
-        console.log('Update hero slide:', {
-            id: slide.id,
-            villaName,
-            villaSubtitle,
-            imageFile,
-            status,
-        });
+
+        if (title.trim() === '') {
+            alert("Title is required.");
+            return;
+        }
+
+        setIsSaving(true);
+        try {
+            const formData = new FormData();
+            formData.append('title', title);
+            formData.append('subtitle', subtitle);
+            // Based on user's image, status should be exactly 'true' or 'false' (string)
+            // Forced to 'true' per user request
+            formData.append('status', 'true');
+
+            if (imageFile) {
+                formData.append('image', imageFile);
+            }
+
+            await updateHeroSlide(slide.id, formData);
+
+            alert("Slide updated successfully!");
+            window.location.assign('/beranda/display/hero');
+        } catch (error) {
+            console.error('Failed to update hero slide:', error);
+            alert("Failed to update slide. Please try again.");
+        } finally {
+            setIsSaving(false);
+        }
     };
 
     return (
@@ -52,48 +90,17 @@ export default function EditHeroSlideForm({ slide }: Props) {
 
             {/* Form */}
             <form onSubmit={handleSubmit} className="space-y-5">
-                {/* Status */}
-                <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-                    <label className="text-xs font-medium text-gray-600">
-                        Status
-                    </label>
-                    <div className="inline-flex rounded-full bg-[#F6EAE0] p-1">
-                        <button
-                            type="button"
-                            onClick={() => setStatus('active')}
-                            className={[
-                                'px-3 py-1 text-xs font-medium rounded-full transition',
-                                status === 'active'
-                                    ? 'bg-white text-[#7A3E2C] shadow-sm'
-                                    : 'text-gray-500',
-                            ].join(' ')}
-                        >
-                            Active
-                        </button>
-                        <button
-                            type="button"
-                            onClick={() => setStatus('inactive')}
-                            className={[
-                                'px-3 py-1 text-xs font-medium rounded-full transition',
-                                status === 'inactive'
-                                    ? 'bg-white text-[#7A3E2C] shadow-sm'
-                                    : 'text-gray-500',
-                            ].join(' ')}
-                        >
-                            Inactive
-                        </button>
-                    </div>
-                </div>
+                {/* Status Hidden/Forced to true as per user request */}
 
                 {/* Villa name */}
                 <div>
                     <label className="block text-xs font-medium text-gray-600">
-                        Villa Name
+                        Villa Title
                     </label>
                     <input
                         type="text"
-                        value={villaName}
-                        onChange={(e) => setVillaName(e.target.value)}
+                        value={title}
+                        onChange={(e) => setTitle(e.target.value)}
                         className="mt-1 block w-full rounded-md border border-[#E0D4C6] px-3 py-2 text-sm text-gray-900 placeholder:text-gray-400 focus:border-[#7A3E2C] focus:outline-none focus:ring-1 focus:ring-[#7A3E2C]"
                         placeholder="e.g. Silas House"
                     />
@@ -106,8 +113,8 @@ export default function EditHeroSlideForm({ slide }: Props) {
                     </label>
                     <input
                         type="text"
-                        value={villaSubtitle}
-                        onChange={(e) => setVillaSubtitle(e.target.value)}
+                        value={subtitle}
+                        onChange={(e) => setSubtitle(e.target.value)}
                         className="mt-1 block w-full rounded-md border border-[#E0D4C6] px-3 py-2 text-sm text-gray-900 placeholder:text-gray-400 focus:border-[#7A3E2C] focus:outline-none focus:ring-1 focus:ring-[#7A3E2C]"
                         placeholder="Short tagline for the villa"
                     />
@@ -119,13 +126,20 @@ export default function EditHeroSlideForm({ slide }: Props) {
                         <p className="block text-xs font-medium text-gray-600 mb-1">
                             Current Preview
                         </p>
-                        <div className="relative h-50 w-full overflow-hidden rounded-lg border border-[#E0D4C6] bg-[#FAF4EC]">
-                            <Image
-                                src={previewUrl}
-                                alt={slide.image.alt}
-                                fill
-                                className="object-cover"
-                            />
+                        <div className="relative h-48 w-full overflow-hidden rounded-lg border border-[#E0D4C6] bg-[#FAF4EC]">
+                            {previewUrl ? (
+                                <Image
+                                    src={previewUrl}
+                                    alt={title}
+                                    fill
+                                    className="object-cover"
+                                    unoptimized
+                                />
+                            ) : (
+                                <div className="flex h-full items-center justify-center text-xs text-gray-400">
+                                    No image available
+                                </div>
+                            )}
                         </div>
                         <p className="mt-1 text-[11px] text-gray-400">
                             If you upload a new image, the preview will update.
@@ -154,15 +168,18 @@ export default function EditHeroSlideForm({ slide }: Props) {
                 <div className="mt-4 flex items-center justify-end gap-2">
                     <button
                         type="button"
-                        className="rounded-full border border-[#E0D4C6] px-4 py-1.5 text-xs font-medium text-gray-600 hover:bg-gray-50 transition"
+                        onClick={() => router.back()}
+                        disabled={isSaving}
+                        className="rounded-full border border-[#E0D4C6] px-4 py-1.5 text-xs font-medium text-gray-600 hover:bg-gray-50 transition disabled:opacity-50"
                     >
                         Cancel
                     </button>
                     <button
                         type="submit"
-                        className="rounded-full bg-[#7A3E2C] px-5 py-1.5 text-xs font-medium text-white hover:bg-[#5C2D20] transition"
+                        disabled={isSaving}
+                        className="rounded-full bg-[#7A3E2C] px-5 py-1.5 text-xs font-medium text-white hover:bg-[#5C2D20] transition disabled:bg-gray-400 disabled:cursor-not-allowed"
                     >
-                        Save Changes
+                        {isSaving ? 'Saving Changes...' : 'Save Changes'}
                     </button>
                 </div>
             </form>

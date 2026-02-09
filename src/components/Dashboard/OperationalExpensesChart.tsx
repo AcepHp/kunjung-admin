@@ -2,62 +2,80 @@
 
 import React from 'react';
 import { dashboardKunjungData } from '@/data/dashboardKunjungData';
+import { CustomDateRange } from './DateRangeFilter';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
 
-export default function OperationalExpensesChart() {
-    const { operationalExpenses } = dashboardKunjungData;
-    const { data: chartData } = operationalExpenses;
+interface OperationalExpensesChartProps {
+    customDateRange?: CustomDateRange;
+}
 
-    const formatYAxis = (tickItem: number) => {
-        return (tickItem / 1000000).toString();
+export default function OperationalExpensesChart({ customDateRange }: OperationalExpensesChartProps) {
+    const { operationalExpenses } = dashboardKunjungData;
+    const [isLoading, setIsLoading] = React.useState(false);
+
+    const getSeed = () => {
+        if (!customDateRange?.startDate || !customDateRange?.endDate) return 0;
+        return (customDateRange.startDate.getTime() + customDateRange.endDate.getTime()) % 1000;
     };
 
+    const seed = getSeed();
+
+    // Simulate loading
+    React.useEffect(() => {
+        if (customDateRange?.startDate && customDateRange?.endDate) {
+            setIsLoading(true);
+            const timer = setTimeout(() => setIsLoading(false), 800);
+            return () => clearTimeout(timer);
+        }
+    }, [seed]);
+
+    // Use monthly data by default
+    const chartData = operationalExpenses.data.map((item, index) => {
+        const v = 1 + (seed / 2000) * Math.sin(index + seed);
+        return {
+            name: `M${index + 1}`,
+            maintenance: Math.round(item.maintenance * 4.33 * v),
+            operations: Math.round(item.operations * 4.33 * (1 + (seed / 3000))),
+            laundry: Math.round(item.laundry * 4.33 * (1 - (seed / 5000))),
+            staff: Math.round(item.staff * 4.33 * (1 + (seed / 8000))),
+        };
+    });
+
     return (
-        <div className="bg-white p-6 rounded-2xl shadow-sm border border-[#F3C7A4]/30 h-full flex flex-col">
-            <div className="flex justify-between items-start mb-6">
-                <div>
-                    <h3 className="text-xl font-bold text-stone-800">{operationalExpenses.title}</h3>
-                    <p className="text-sm text-stone-500 mt-1">{operationalExpenses.subtitle}</p>
-                </div>
+        <div className={`bg-white p-6 rounded-2xl shadow-sm border border-[#F3C7A4]/30 h-full flex flex-col transition-all duration-700 ${isLoading ? 'opacity-30 blur-md scale-[0.98]' : 'opacity-100'}`}>
+            <div className="mb-6">
+                <h3 className="text-xl font-bold text-stone-800">Operational Expenses</h3>
+                <p className="text-sm text-stone-500 mt-1">Monthly breakdown by category</p>
             </div>
 
-            <div className="h-[350px] w-full">
+            <div className="flex-1 min-h-[300px]">
                 <ResponsiveContainer width="100%" height="100%">
-                    <BarChart
-                        data={chartData}
-                        margin={{ top: 20, right: 10, left: 10, bottom: 0 }}
-                        barSize={48}
-                    >
-                        <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E7E5E4" />
+                    <BarChart data={chartData} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
+                        <CartesianGrid strokeDasharray="3 3" stroke="#F3C7A4" opacity={0.3} vertical={false} />
                         <XAxis
-                            dataKey="week"
-                            axisLine={false}
-                            tickLine={false}
-                            tick={{ fill: '#78716C', fontSize: 12, fontWeight: 500 }}
-                            dy={10}
+                            dataKey="name"
+                            tick={{ fill: '#78716C', fontSize: 12 }}
+                            stroke="#E7E5E4"
                         />
                         <YAxis
-                            axisLine={false}
-                            tickLine={false}
-                            tick={{ fill: '#78716C', fontSize: 12, fontWeight: 500 }}
-                            tickFormatter={formatYAxis}
-                            label={{ value: 'Millions (Rp)', angle: -90, position: 'insideLeft', style: { fill: '#A8A29E', fontSize: 10 } }}
+                            tick={{ fill: '#78716C', fontSize: 12 }}
+                            tickFormatter={(value) => `${(value / 1_000_000).toFixed(0)}M`}
+                            stroke="#E7E5E4"
                         />
                         <Tooltip
-                            cursor={{ fill: '#faf8f3', opacity: 0.8 }}
                             content={({ active, payload, label }) => {
                                 if (active && payload && payload.length) {
                                     return (
-                                        <div className="bg-white p-4 rounded-xl shadow-xl border border-[#F3C7A4]/30 ring-1 ring-black/5">
-                                            <p className="font-bold text-stone-800 mb-2">{label}</p>
-                                            {payload.map((entry: any, index: number) => (
-                                                <div key={index} className="flex justify-between items-center gap-4 mb-1 last:mb-0 text-sm">
-                                                    <span className="text-stone-600 flex items-center gap-2">
-                                                        <div className="w-2 h-2 rounded-full" style={{ backgroundColor: entry.color }}></div>
-                                                        {entry.name}
-                                                    </span>
-                                                    <span className="font-semibold text-stone-900">
-                                                        {new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(entry.value)}
+                                        <div className="bg-white p-4 rounded-lg shadow-xl border border-[#F3C7A4]/30 ring-1 ring-black/5">
+                                            <p className="font-semibold text-stone-800 mb-2">{label}</p>
+                                            {payload.map((entry, index) => (
+                                                <div key={index} className="flex items-center justify-between gap-4 mb-1">
+                                                    <div className="flex items-center gap-2">
+                                                        <div className="w-3 h-3 rounded-full" style={{ backgroundColor: entry.color }} />
+                                                        <span className="text-sm text-stone-600 capitalize">{entry.name}</span>
+                                                    </div>
+                                                    <span className="text-sm font-bold text-[#7A3E2C]">
+                                                        {new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(entry.value as number)}
                                                     </span>
                                                 </div>
                                             ))}
@@ -68,16 +86,14 @@ export default function OperationalExpensesChart() {
                             }}
                         />
                         <Legend
-                            verticalAlign="bottom"
-                            height={36}
+                            wrapperStyle={{ paddingTop: "20px", fontSize: "12px", fontWeight: 500 }}
                             iconType="circle"
-                            wrapperStyle={{ paddingTop: '24px', fontSize: '13px', fontWeight: 500, color: '#57534E' }}
+                            formatter={(value) => <span className="text-stone-600 capitalize">{value}</span>}
                         />
-                        {/* Earthy Stacked Palette */}
-                        <Bar dataKey="operations" stackId="a" fill="#78716C" name="Operations" />
-                        <Bar dataKey="maintenance" stackId="a" fill="#D97706" name="Maintenance" />
-                        <Bar dataKey="laundry" stackId="a" fill="#14B8A6" name="Laundry" />
-                        <Bar dataKey="staff" stackId="a" fill="#7A3E2C" name="Staff" radius={[6, 6, 0, 0]} />
+                        <Bar dataKey="maintenance" stackId="a" fill="#7A3E2C" radius={[0, 0, 0, 0]} />
+                        <Bar dataKey="operations" stackId="a" fill="#D97706" radius={[0, 0, 0, 0]} />
+                        <Bar dataKey="laundry" stackId="a" fill="#059669" radius={[0, 0, 0, 0]} />
+                        <Bar dataKey="staff" stackId="a" fill="#0891B2" radius={[4, 4, 0, 0]} />
                     </BarChart>
                 </ResponsiveContainer>
             </div>

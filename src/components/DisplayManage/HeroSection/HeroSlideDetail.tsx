@@ -1,14 +1,14 @@
 'use client';
 
 import Image from 'next/image';
-import type { HeroSlide } from '@/data/HeroSectionData';
+import { HeroSlideApiResponse } from '@/services/HeroSectionService';
 import {
     InformationCircleIcon,
     PhotoIcon,
 } from '@heroicons/react/24/outline';
 
 type Props = {
-    slide: HeroSlide;
+    slide: HeroSlideApiResponse;
 };
 
 export default function HeroSlideDetail({ slide }: Props) {
@@ -20,24 +20,17 @@ export default function HeroSlideDetail({ slide }: Props) {
                     <p className="text-[11px] font-medium uppercase tracking-[0.16em] text-[#C3A086]">
                         Hero Slide Details
                     </p>
-                    <h1 className="mt-1 text-xl sm:text-2xl font-semibold text-[#2E2620]">
-                        {slide.villaName}
-                    </h1>
-                    <p className="mt-1 text-sm text-gray-500 max-w-2xl">
-                        {slide.villaSubtitle}
-                    </p>
                 </div>
 
                 <div className="flex flex-wrap gap-2 sm:justify-end">
                     <span
-                        className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-medium ${
-                            slide.isActive
+                        className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-medium ${slide.status
                                 ? 'bg-green-50 text-green-700 border border-green-100'
                                 : 'bg-gray-100 text-gray-600 border border-gray-200'
-                        }`}
+                            }`}
                     >
                         <InformationCircleIcon className="h-4 w-4" />
-                        {slide.isActive ? 'Active' : 'Inactive'}
+                        {slide.status ? 'Active' : 'Inactive'}
                     </span>
                 </div>
             </div>
@@ -47,8 +40,8 @@ export default function HeroSlideDetail({ slide }: Props) {
                 {/* Image Preview */}
                 <div className="relative h-64 sm:h-80 lg:h-[380px] w-full overflow-hidden rounded-2xl border border-[#E9D6C6] bg-[#FDF7F0]">
                     <Image
-                        src={slide.image.url}
-                        alt={slide.image.alt}
+                        src={slide.imageUrl}
+                        alt={slide.title}
                         fill
                         className="object-cover"
                     />
@@ -59,10 +52,10 @@ export default function HeroSlideDetail({ slide }: Props) {
                             Hero Preview
                         </p>
                         <h2 className="mt-1 text-xl sm:text-2xl font-semibold text-white">
-                            {slide.villaName}
+                            {slide.title}
                         </h2>
                         <p className="mt-1 text-sm text-gray-100 line-clamp-2">
-                            {slide.villaSubtitle}
+                            {slide.subtitle}
                         </p>
                     </div>
                 </div>
@@ -79,29 +72,41 @@ export default function HeroSlideDetail({ slide }: Props) {
                         <div className="flex items-start">
                             <div className="w-32 text-gray-500">Title</div>
                             <div className="flex-1 text-[#2E2620] font-medium">
-                                {slide.villaName}
+                                {slide.title}
                             </div>
                         </div>
 
                         <div className="flex items-start">
                             <div className="w-32 text-gray-500">Subtitle</div>
                             <div className="flex-1 text-[#2E2620]">
-                                {slide.villaSubtitle}
+                                {slide.subtitle}
                             </div>
                         </div>
 
-                        <div className="flex items-start">
+                        {/* <div className="flex items-start">
                             <div className="w-32 text-gray-500">Status</div>
                             <div className="flex-1">
                                 <span
-                                    className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-[11px] font-medium ${
-                                        slide.isActive
+                                    className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-[11px] font-medium ${slide.status
                                             ? 'bg-green-50 text-green-700 border border-green-100'
                                             : 'bg-gray-100 text-gray-600 border border-gray-200'
-                                    }`}
+                                        }`}
                                 >
-                                    {slide.isActive ? 'Active' : 'Inactive'}
+                                    {slide.status ? 'Active' : 'Inactive'}
                                 </span>
+                            </div>
+                        </div> */}
+
+                        <div className="flex items-start">
+                            <div className="w-32 text-gray-500">Created At</div>
+                            <div className="flex-1 text-[#2E2620]">
+                                {new Date(slide.createdAt).toLocaleDateString('en-GB', {
+                                    day: '2-digit',
+                                    month: 'long',
+                                    year: 'numeric',
+                                    hour: '2-digit',
+                                    minute: '2-digit'
+                                })}
                             </div>
                         </div>
                     </div>

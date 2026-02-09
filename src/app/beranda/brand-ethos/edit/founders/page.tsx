@@ -1,18 +1,36 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import BreadCrumbs, { BreadCrumbItem } from '@/components/Common/Breadcrumbs';
 import FoundersStoryEdit from '@/components/BrandEthos/Edit/FoundersStoryEdit';
-import { brandEthosResponse } from '@/data/BrandEthos';
-import { ChevronRightIcon } from '@heroicons/react/24/outline';
+import { getBrandEthos, updateFounderLegacy } from '@/services/BrandEthosService';
+import BrandEthosFormSkeleton from '@/components/BrandEthos/BrandEthosFormSkeleton';
 
 export default function Page() {
     const router = useRouter();
-    const data = brandEthosResponse.data;
+    const [loading, setLoading] = useState(true);
+    const [saving, setSaving] = useState(false);
 
-    const [content, setContent] = useState(data.foundersStory.content.description);
-    const [image, setImage] = useState(data.foundersStory.content.image);
+    const [content, setContent] = useState('');
+    const [image, setImage] = useState<{ url: string; alt: string; file?: File }>({ url: '', alt: 'Founders Image' });
+
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const data = await getBrandEthos();
+                if (data) {
+                    setContent(data.founderStory || '');
+                    setImage({ url: data.founderLegacyImage || '', alt: 'Founders Image' });
+                }
+            } catch (error) {
+                console.error('Failed to fetch founder story:', error);
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchData();
+    }, []);
 
     const breadcrumbItems: BreadCrumbItem[] = [
         { name: 'Home', href: '/beranda' },
@@ -20,10 +38,24 @@ export default function Page() {
         { name: 'Edit Founders Story', disabled: true },
     ];
 
-    const handleSave = () => {
-        console.log('SAVING FOUNDERS STORY:', { content, image });
-        router.push('/beranda/brand-ethos');
+    const handleSave = async () => {
+        setSaving(true);
+        try {
+            await updateFounderLegacy({
+                founderStory: content,
+                founderLegacyImage: image.url,
+                file: image.file
+            });
+            router.push('/beranda/brand-ethos');
+        } catch (error) {
+            console.error('Failed to update founder story:', error);
+            alert('Failed to save changes');
+        } finally {
+            setSaving(false);
+        }
     };
+
+    if (loading) return <BrandEthosFormSkeleton />;
 
     return (
         <div className="space-y-6">
@@ -38,6 +70,7 @@ export default function Page() {
                 image={image} setImage={setImage}
                 onSave={handleSave}
                 onCancel={() => router.push('/beranda/brand-ethos')}
+                isSubmitting={saving}
             />
         </div>
     );

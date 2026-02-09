@@ -7,19 +7,20 @@ import { PhotoIcon } from '@heroicons/react/24/outline';
 type Props = {
     content: string;
     setContent: (val: string) => void;
-    image: { url: string; alt: string };
-    setImage: (val: { url: string; alt: string }) => void;
+    image: { url: string; alt: string; file?: File };
+    setImage: (val: { url: string; alt: string; file?: File }) => void;
     onSave: () => void;
     onCancel: () => void;
+    isSubmitting?: boolean;
 };
 
-export default function FoundersStoryEdit({ content, setContent, image, setImage, onSave, onCancel }: Props) {
+export default function FoundersStoryEdit({ content, setContent, image, setImage, onSave, onCancel, isSubmitting = false }: Props) {
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (file) {
             const reader = new FileReader();
             reader.onloadend = () => {
-                setImage({ ...image, url: reader.result as string });
+                setImage({ ...image, url: reader.result as string, file: file });
             };
             reader.readAsDataURL(file);
         }
@@ -44,6 +45,7 @@ export default function FoundersStoryEdit({ content, setContent, image, setImage
                                 onChange={(e) => setContent(e.target.value)}
                                 className="w-full rounded-xl border border-[#E0D4C6] px-4 py-3 text-sm h-64 resize-none focus:ring-2 focus:ring-[#7A3E2C] focus:border-transparent transition-all outline-none leading-relaxed"
                                 placeholder="Tell the founders' story..."
+                                disabled={isSubmitting}
                             />
                         </div>
 
@@ -55,7 +57,8 @@ export default function FoundersStoryEdit({ content, setContent, image, setImage
                                 type="file"
                                 accept="image/*"
                                 onChange={handleFileChange}
-                                className="block w-full cursor-pointer rounded-xl border border-[#E0D4C6] bg-white px-3 py-2 text-sm text-gray-700 file:mr-4 file:rounded-lg file:border-0 file:bg-[#7A3E2C] file:px-4 file:py-2 file:text-xs file:font-bold file:uppercase file:tracking-widest file:text-white hover:file:bg-[#5C2D20] transition-all"
+                                className="block w-full cursor-pointer rounded-xl border border-[#E0D4C6] bg-white px-3 py-2 text-sm text-gray-700 file:mr-4 file:rounded-lg file:border-0 file:bg-[#7A3E2C] file:px-4 file:py-2 file:text-xs file:font-bold file:uppercase file:tracking-widest file:text-white hover:file:bg-[#5C2D20] transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                                disabled={isSubmitting}
                             />
                             <p className="mt-1 text-[11px] text-gray-400">
                                 Best with portrait orientation. JPG or PNG allowed.
@@ -95,16 +98,28 @@ export default function FoundersStoryEdit({ content, setContent, image, setImage
                     <button
                         type="button"
                         onClick={onCancel}
-                        className="rounded-full border border-[#E0D4C6] px-6 py-2.5 text-xs font-bold text-gray-500 hover:bg-gray-50 transition-all uppercase tracking-widest"
+                        disabled={isSubmitting}
+                        className="rounded-full border border-[#E0D4C6] px-6 py-2.5 text-xs font-bold text-gray-500 hover:bg-gray-50 transition-all uppercase tracking-widest disabled:opacity-50"
                     >
                         Cancel
                     </button>
                     <button
                         type="button"
                         onClick={onSave}
-                        className="rounded-full bg-[#7A3E2C] px-8 py-2.5 text-xs font-bold text-white shadow-lg shadow-[#7A3E2C]/20 hover:bg-[#5C2D20] transition-all uppercase tracking-widest"
+                        disabled={isSubmitting}
+                        className="rounded-full bg-[#7A3E2C] px-8 py-2.5 text-xs font-bold text-white shadow-lg shadow-[#7A3E2C]/20 hover:bg-[#5C2D20] transition-all uppercase tracking-widest disabled:opacity-70 disabled:cursor-not-allowed flex items-center gap-2"
                     >
-                        Save Changes
+                        {isSubmitting ? (
+                            <>
+                                <svg className="animate-spin h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                </svg>
+                                Saving...
+                            </>
+                        ) : (
+                            'Save Changes'
+                        )}
                     </button>
                 </div>
             </div>

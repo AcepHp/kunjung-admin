@@ -3,17 +3,20 @@
 import { useMemo, useState } from 'react';
 import {
     ArrowsUpDownIcon,
+    PlusIcon,
 } from '@heroicons/react/24/outline';
 import TableSearch from '@/components/Common/TableSearch';
 import Pagination from '@/components/Common/Pagination';
 import { bookingsData, BookingStatus, BookingSource } from '@/data/bookings.data';
 import { userGuests } from '@/data/UserGuest';
 import { villas } from '@/data/villas';
+import { useRouter } from 'next/navigation';
 
 type SortKey = 'id' | 'guest' | 'villa' | 'checkIn' | 'status' | 'total' | 'source';
 type SortDirection = 'asc' | 'desc';
 
 export default function ReservationSection() {
+    const router = useRouter();
     const [search, setSearch] = useState('');
     const [page, setPage] = useState(1);
     const pageSize = 10;
@@ -156,7 +159,7 @@ export default function ReservationSection() {
                     </p>
                 </div>
 
-                <div className="flex items-center gap-3">
+                <div className="flex flex-col sm:flex-row items-center gap-3">
                     <TableSearch
                         value={search}
                         onChange={(val) => {
@@ -166,6 +169,13 @@ export default function ReservationSection() {
                         placeholder="Search reservations..."
                         className="w-full sm:w-64"
                     />
+                    <button
+                        onClick={() => router.push('/beranda/reservations/add')}
+                        className="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-xl bg-[#7A3E2C] px-5 py-2.5 text-sm font-bold text-white shadow-sm hover:bg-[#5C2D20] transition-all active:scale-95"
+                    >
+                        <PlusIcon className="h-4 w-4" />
+                        Add manual booking
+                    </button>
                 </div>
             </div>
 

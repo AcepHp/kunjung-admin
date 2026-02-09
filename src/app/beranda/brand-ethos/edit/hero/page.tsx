@@ -1,19 +1,56 @@
 'use client';
 
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { useState } from 'react';
-import BreadCrumbs, { BreadCrumbItem } from '@/components/Common/Breadcrumbs';
 import HeroEdit from '@/components/BrandEthos/Edit/HeroEdit';
-import { brandEthosResponse } from '@/data/BrandEthos';
-import { ChevronRightIcon } from '@heroicons/react/24/outline';
+import { getBrandEthos, updateBrandIdentity } from '@/services/BrandEthosService';
+import BreadCrumbs, { BreadCrumbItem } from '@/components/Common/Breadcrumbs';
+import BrandEthosFormSkeleton from '@/components/BrandEthos/BrandEthosFormSkeleton';
 
 export default function Page() {
     const router = useRouter();
-    const data = brandEthosResponse.data;
+    const [loading, setLoading] = useState(true);
+    const [saving, setSaving] = useState(false);
 
-    const [title, setTitle] = useState(data.hero.title);
-    const [subtitle, setSubtitle] = useState(data.hero.subtitle);
-    const [image, setImage] = useState(data.hero.image);
+    // State for Hero Identity
+    const [heroMainTitle, setHeroMainTitle] = useState('');
+    const [heroCorePhilosophy, setHeroCorePhilosophy] = useState('');
+    const [heroImageUrl, setHeroImageUrl] = useState('');
+
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const data = await getBrandEthos();
+                if (data) {
+                    setHeroMainTitle(data.heroMainTitle || '');
+                    setHeroCorePhilosophy(data.heroCorePhilosophy || '');
+                    setHeroImageUrl(data.heroImageUrl || '');
+                }
+            } catch (error) {
+                console.error('Failed to fetch data:', error);
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchData();
+    }, []);
+
+    const handleSave = async () => {
+        setSaving(true);
+        try {
+            await updateBrandIdentity({
+                heroMainTitle,
+                heroCorePhilosophy,
+                heroImageUrl
+            });
+            router.push('/beranda/brand-ethos');
+        } catch (error) {
+            console.error('Failed to save:', error);
+            alert('Failed to save changes');
+        } finally {
+            setSaving(false);
+        }
+    };
 
     const breadcrumbItems: BreadCrumbItem[] = [
         { name: 'Home', href: '/beranda' },
@@ -21,25 +58,25 @@ export default function Page() {
         { name: 'Edit Hero', disabled: true },
     ];
 
-    const handleSave = () => {
-        console.log('SAVING HERO:', { title, subtitle, image });
-        router.push('/beranda/brand-ethos');
-    };
+    if (loading) return <BrandEthosFormSkeleton />;
 
     return (
         <div className="space-y-6">
             <BreadCrumbs
                 items={breadcrumbItems}
                 title="Edit Hero Identity"
-                description="Update the visual identity and core philosophy of the Brand Ethos."
+                description="Update the main visual and core philosophy statement."
             />
-
             <HeroEdit
-                title={title} setTitle={setTitle}
-                subtitle={subtitle} setSubtitle={setSubtitle}
-                image={image} setImage={setImage}
+                title={heroMainTitle}
+                setTitle={setHeroMainTitle}
+                subtitle={heroCorePhilosophy}
+                setSubtitle={setHeroCorePhilosophy}
+                image={{ url: heroImageUrl, alt: 'Hero Image' }}
+                setImage={(val) => setHeroImageUrl(val.url)}
                 onSave={handleSave}
                 onCancel={() => router.push('/beranda/brand-ethos')}
+                isSubmitting={saving}
             />
         </div>
     );

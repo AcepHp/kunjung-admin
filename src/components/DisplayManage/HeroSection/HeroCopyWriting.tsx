@@ -1,12 +1,36 @@
 import Link from 'next/link';
-import { PencilSquareIcon } from '@heroicons/react/24/outline';
+import { PencilSquareIcon, ExclamationTriangleIcon, PlusIcon } from '@heroicons/react/24/outline';
 import { HeroSectionApiResponse } from '@/services/HeroSectionService';
 
 type Props = {
     data: HeroSectionApiResponse;
+    isEmpty?: boolean;
 };
 
-export default function HeroCopywriting({ data }: Props) {
+export default function HeroCopywriting({ data, isEmpty }: Props) {
+    if (isEmpty) {
+        return (
+            <section className="rounded-2xl border border-[#E9D6C6] bg-white p-6 shadow-sm">
+                <div className="flex flex-col items-center justify-center py-8 text-center">
+                    <ExclamationTriangleIcon className="h-10 w-10 text-yellow-500 mb-4" />
+                    <h3 className="text-base font-semibold text-[#2E2620]">No Hero Data Found</h3>
+                    <p className="mt-1 text-sm text-gray-500 max-w-xl">
+                        The hero section copywriting is currently empty.
+                    </p>
+                    <Link href="/beranda/display/hero/add-hero" className="mt-6">
+                        <button
+                            type="button"
+                            className="inline-flex items-center gap-1.5 rounded-full bg-[#7A3E2C] px-6 py-2.5 text-xs font-bold text-white shadow-lg shadow-[#7A3E2C]/20 hover:bg-[#5C2D20] transition-all uppercase tracking-widest"
+                        >
+                            <PlusIcon className="h-4 w-4" />
+                            <span>Add Hero Section</span>
+                        </button>
+                    </Link>
+                </div>
+            </section>
+        );
+    }
+
     return (
         <section className="rounded-2xl border border-[#E9D6C6] bg-white p-5 sm:p-6 shadow-sm">
             {/* Header */}

@@ -61,7 +61,7 @@ const navigation: NavItem[] = [
         icon: UsersIcon,
         children: [
             { name: "Guest", href: "/beranda/manage-user/guest" },
-            { name: "Home Owner", href: "/beranda/manage-user/home-owner" },
+            { name: "Property Owner", href: "/beranda/manage-user/home-owner" },
         ],
     },
     { name: "Testimonial Management", href: "/beranda/testimonial", icon: ChatBubbleLeftRightIcon, current: false },
@@ -80,10 +80,7 @@ const navigation: NavItem[] = [
     },
 ]
 
-const propertyGroups: GroupItem[] = [
-    { id: 1, name: "All Properties", href: "#", initial: "AP", current: false },
-    { id: 3, name: "Partner Owners", href: "#", initial: "PO", current: false },
-]
+
 
 
 
@@ -286,29 +283,7 @@ export default function SidebarLayout({
                                                 ))}
                                             </ul>
                                         </li>
-                                        <li>
-                                            <div className="text-xs/6 font-semibold text-[#F8DAC4]">Property groups</div>
-                                            <ul role="list" className="-mx-2 mt-2 space-y-1">
-                                                {propertyGroups.map((group) => (
-                                                    <li key={group.id}>
-                                                        <a
-                                                            href={group.href}
-                                                            className={classNames(
-                                                                group.current
-                                                                    ? "bg-white/10 text-white"
-                                                                    : "text-[#FBEFE5] hover:bg-white/10 hover:text-white",
-                                                                "group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold transition-colors",
-                                                            )}
-                                                        >
-                                                            <span className="flex size-6 shrink-0 items-center justify-center rounded-lg border border-[#F3C7A4] bg-[#8B4A36] text-[0.625rem] font-medium text-white">
-                                                                {group.initial}
-                                                            </span>
-                                                            <span className="truncate">{group.name}</span>
-                                                        </a>
-                                                    </li>
-                                                ))}
-                                            </ul>
-                                        </li>
+                                        
                                     </ul>
                                 </nav>
                             </div>
@@ -413,29 +388,7 @@ export default function SidebarLayout({
                                         ))}
                                     </ul>
                                 </li>
-                                <li>
-                                    <div className="text-xs/6 font-semibold text-[#F8DAC4]">Property groups</div>
-                                    <ul role="list" className="-mx-2 mt-2 space-y-1">
-                                        {propertyGroups.map((group) => (
-                                            <li key={group.id}>
-                                                <a
-                                                    href={group.href}
-                                                    className={classNames(
-                                                        group.current
-                                                            ? "bg-white/10 text-white"
-                                                            : "text-[#FBEFE5] hover:bg-white/10 hover:text-white",
-                                                        "group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold transition-colors",
-                                                    )}
-                                                >
-                                                    <span className="flex size-6 shrink-0 items-center justify-center rounded-lg border border-[#F3C7A4] bg-[#8B4A36] text-[0.625rem] font-medium text-white">
-                                                        {group.initial}
-                                                    </span>
-                                                    <span className="truncate">{group.name}</span>
-                                                </a>
-                                            </li>
-                                        ))}
-                                    </ul>
-                                </li>
+                                
                             </ul>
                         </nav>
                     </div>

@@ -1,21 +1,46 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import BreadCrumbs, { BreadCrumbItem } from '@/components/Common/Breadcrumbs';
 import IntroductionEdit from '@/components/BrandEthos/Edit/IntroductionEdit';
-import { brandEthosResponse } from '@/data/BrandEthos';
-import { ChevronRightIcon } from '@heroicons/react/24/outline';
+import { getBrandEthos, updateBrandIntroduction } from '@/services/BrandEthosService';
+import BrandEthosFormSkeleton from '@/components/BrandEthos/BrandEthosFormSkeleton';
 
 export default function Page() {
     const router = useRouter();
-    const data = brandEthosResponse.data;
+    const [loading, setLoading] = useState(true);
+    const [saving, setSaving] = useState(false);
 
-    const [label, setLabel] = useState(data.introduction.label);
-    const [title, setTitle] = useState(data.introduction.title);
-    const [subtitle, setSubtitle] = useState(data.introduction.subtitle);
-    const [description, setDescription] = useState(data.introduction.description);
-    const [corePrinciples, setCorePrinciples] = useState(data.introduction.corePrinciples);
+    const [label, setLabel] = useState('');
+    const [title, setTitle] = useState('');
+    const [subtitle, setSubtitle] = useState('');
+    const [description, setDescription] = useState('');
+    const [corePrinciples, setCorePrinciples] = useState<string[]>(['', '', '']);
+
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const data = await getBrandEthos();
+                if (data) {
+                    setLabel(data.introLabel || '');
+                    setTitle(data.introMainTitle || '');
+                    setSubtitle(data.introSubtitle || '');
+                    setDescription(data.introDescription || '');
+                    setCorePrinciples([
+                        data.introPrincipleOne || '',
+                        data.introPrincipleTwo || '',
+                        data.introPrincipleThree || ''
+                    ]);
+                }
+            } catch (error) {
+                console.error('Failed to fetch brand ethos:', error);
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchData();
+    }, []);
 
     const breadcrumbItems: BreadCrumbItem[] = [
         { name: 'Home', href: '/beranda' },
@@ -23,10 +48,28 @@ export default function Page() {
         { name: 'Edit Introduction', disabled: true },
     ];
 
-    const handleSave = () => {
-        console.log('SAVING INTRODUCTION:', { label, title, subtitle, description, corePrinciples });
-        router.push('/beranda/brand-ethos');
+    const handleSave = async () => {
+        setSaving(true);
+        try {
+            await updateBrandIntroduction({
+                introLabel: label,
+                introMainTitle: title,
+                introSubtitle: subtitle,
+                introDescription: description,
+                introPrincipleOne: corePrinciples[0] || '',
+                introPrincipleTwo: corePrinciples[1] || '',
+                introPrincipleThree: corePrinciples[2] || ''
+            });
+            router.push('/beranda/brand-ethos');
+        } catch (error) {
+            console.error('Failed to update brand introduction:', error);
+            alert('Failed to save changes');
+        } finally {
+            setSaving(false);
+        }
     };
+
+    if (loading) return <BrandEthosFormSkeleton />;
 
     return (
         <div className="space-y-6">
@@ -44,6 +87,7 @@ export default function Page() {
                 corePrinciples={corePrinciples} setCorePrinciples={setCorePrinciples}
                 onSave={handleSave}
                 onCancel={() => router.push('/beranda/brand-ethos')}
+                isSubmitting={saving}
             />
         </div>
     );

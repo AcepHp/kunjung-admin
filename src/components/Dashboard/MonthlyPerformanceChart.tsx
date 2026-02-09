@@ -2,23 +2,55 @@
 
 import React from 'react';
 import { dashboardKunjungData } from '@/data/dashboardKunjungData';
+import { CustomDateRange } from './DateRangeFilter';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
 import { EllipsisHorizontalIcon } from '@heroicons/react/24/outline';
 
-export default function MonthlyPerformanceChart() {
-    const { monthlyFinancials } = dashboardKunjungData;
+interface MonthlyPerformanceChartProps {
+    customDateRange?: CustomDateRange;
+}
 
-    const chartData = monthlyFinancials.labels.map((label, index) => ({
-        name: label,
-        income: monthlyFinancials.income[index],
-        outcome: monthlyFinancials.outcome[index],
-    }));
+export default function MonthlyPerformanceChart({ customDateRange }: MonthlyPerformanceChartProps) {
+    const [isLoading, setIsLoading] = React.useState(false);
+
+    const getSeed = () => {
+        if (!customDateRange?.startDate || !customDateRange?.endDate) return 0;
+        return (customDateRange.startDate.getTime() + customDateRange.endDate.getTime()) % 1000;
+    };
+
+    const seed = getSeed();
+
+    // Simulate loading
+    React.useEffect(() => {
+        if (customDateRange?.startDate && customDateRange?.endDate) {
+            setIsLoading(true);
+            const timer = setTimeout(() => setIsLoading(false), 700);
+            return () => clearTimeout(timer);
+        }
+    }, [seed]);
+
+    // Use monthly data by default
+    const financialData = dashboardKunjungData.monthlyFinancials;
+
+    const chartData = financialData.labels.map((label, index) => {
+        // Unique trend for each day/range
+        const var1 = 1 + (seed / 1000) * Math.sin(index + seed);
+        const var2 = 1 + (seed / 1500) * Math.cos(index - seed);
+
+        return {
+            name: label,
+            income: Math.round(financialData.income[index] * var1),
+            outcome: Math.round(financialData.outcome[index] * var2),
+        };
+    });
+
+    const title = 'Financial Performance';
 
     return (
-        <div className="bg-white p-6 rounded-2xl shadow-sm border border-[#F3C7A4]/30 h-full flex flex-col">
+        <div className={`bg-white p-6 rounded-2xl shadow-sm border border-[#F3C7A4]/30 h-full flex flex-col transition-all duration-700 ${isLoading ? 'opacity-30 blur-md pointer-events-none scale-[0.99]' : 'opacity-100'}`}>
             <div className="flex justify-between items-start mb-8">
                 <div>
-                    <h3 className="text-xl font-bold text-stone-800">Financial Performance</h3>
+                    <h3 className="text-xl font-bold text-stone-800">{title}</h3>
                     <p className="text-sm text-stone-500 mt-1">Income vs Outcome comparison</p>
                 </div>
                 <button className="p-2 hover:bg-[#faf8f3] rounded-lg transition-colors text-stone-400">

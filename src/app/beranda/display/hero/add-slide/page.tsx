@@ -16,8 +16,8 @@ export default function Page() {
             {/* Header + Breadcrumb */}
             <BreadCrumbs
                 items={breadcrumbItems}
-                title="Add Hero Slide"
-                description="Create a new hero slide for the Kunjung homepage."
+                title="Add 4 Hero Slides"
+                description="Configure all 4 hero slides at once for the homepage."
             />
 
             {/* Form Add Slide (pure UI, no logic) */}

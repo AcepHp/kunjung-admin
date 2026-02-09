@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import BreadCrumbs, {
     BreadCrumbItem,
 } from '@/components/Common/Breadcrumbs';
+import { brandStoryData } from '@/data/BrandStoryData';
 import BrandStoryEditSection from '@/components/DisplayManage/BrandStory/BrandStoryEditSection';
 import BrandStoryEditSkeleton from '@/components/DisplayManage/BrandStory/BrandStoryEditSkeleton';
 import { getBrandStory, updateBrandStory, BrandStoryApiResponse } from '@/services/BrandStoryService';
@@ -21,7 +22,9 @@ export default function Page() {
                 const apiData = await getBrandStory();
                 setData(apiData);
             } catch (error) {
-                console.error('Failed to fetch brand story:', error);
+                console.warn('Failed to fetch brand story from API:', error);
+                // Do NOT set fallback data. Pure API mode means we accept the error state.
+                setData(null);
             } finally {
                 setIsLoading(false);
             }
