@@ -24,7 +24,7 @@ export default function BrandStoryImageEditSection({
 
     return (
         <section className="rounded-2xl border border-[#E0D4C6] bg-white shadow-sm">
-            
+
             {/* ===== CONTENT ===== */}
             <div className="grid gap-6 px-6 py-6 lg:grid-cols-[1.2fr_1fr]">
                 {/* ===== LEFT : UPLOAD ===== */}
