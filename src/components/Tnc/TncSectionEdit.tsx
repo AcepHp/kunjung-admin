@@ -13,8 +13,9 @@ type Props = {
 const editorInit = {
     height: 280,
     menubar: false,
-    plugins: ['lists', 'link', 'autolink'],
+    plugins: ['advlist', 'lists', 'link', 'autolink'],
     toolbar: 'undo redo | bold italic underline | bullist numlist | link',
+    content_style: 'body { font-family:Inter,sans-serif; font-size:14px } ul { list-style-type: disc; margin-left: 20px; } ol { list-style-type: decimal; margin-left: 20px; }',
 };
 
 export default function TncSectionEdit({ initialData, onSave }: Props) {

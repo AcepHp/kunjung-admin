@@ -5,14 +5,14 @@ export async function middleware(req: NextRequest) {
   const data = await auth();
   const { pathname } = req.nextUrl;
 
-  //SUDAH LOGIN tapi buka LOGIN PAGE (/)
-  if (data && pathname === "/") {
-    return NextResponse.redirect(new URL("/beranda", req.url));
+  // BELUM LOGIN tapi buka halaman dashboard (/beranda atau sub-pathnya)
+  if (!data && pathname.startsWith("/beranda")) {
+    return NextResponse.redirect(new URL("/", req.url));
   }
 
-  //BELUM LOGIN tapi buka halaman selain LOGIN PAGE
-  if (!data && pathname !== "/") {
-    return NextResponse.redirect(new URL("/", req.url));
+  // SUDAH LOGIN tapi buka LOGIN PAGE (/)
+  if (data && pathname === "/") {
+    return NextResponse.redirect(new URL("/beranda", req.url));
   }
 
   return NextResponse.next();

@@ -38,7 +38,7 @@ export default function TncSection({ data }: Props) {
                         Transaction Terms
                     </h3>
                     <div
-                        className="prose prose-sm max-w-none text-gray-700"
+                        className="prose prose-sm max-w-none text-gray-700 [&_ol]:list-decimal [&_ul]:list-disc [&_ol]:pl-5 [&_ul]:pl-5"
                         dangerouslySetInnerHTML={{
                             __html: data.transactionTerms,
                         }}
@@ -51,7 +51,7 @@ export default function TncSection({ data }: Props) {
                         Refund & Cancellation Policy
                     </h3>
                     <div
-                        className="prose prose-sm max-w-none text-gray-700"
+                        className="prose prose-sm max-w-none text-gray-700 [&_ol]:list-decimal [&_ul]:list-disc [&_ol]:pl-5 [&_ul]:pl-5"
                         dangerouslySetInnerHTML={{
                             __html: data.refundCancellationPolicy,
                         }}
@@ -64,7 +64,7 @@ export default function TncSection({ data }: Props) {
                         Agreement Text
                     </h3>
                     <div
-                        className="prose prose-xs max-w-none text-gray-700"
+                        className="prose prose-xs max-w-none text-gray-700 [&_ol]:list-decimal [&_ul]:list-disc [&_ol]:pl-5 [&_ul]:pl-5"
                         dangerouslySetInnerHTML={{
                             __html: data.agreementText,
                         }}

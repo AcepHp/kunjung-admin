@@ -135,7 +135,7 @@ export default function SidebarLayout({
 
     // Logout handler
     const handleLogout = async () => {
-        await signOut({ callbackUrl: "/auth/login" })
+        await signOut({ callbackUrl: "/" })
     }
     const [mounted, setMounted] = useState(false)
 
@@ -283,7 +283,7 @@ export default function SidebarLayout({
                                                 ))}
                                             </ul>
                                         </li>
-                                        
+
                                     </ul>
                                 </nav>
                             </div>
@@ -388,7 +388,7 @@ export default function SidebarLayout({
                                         ))}
                                     </ul>
                                 </li>
-                                
+
                             </ul>
                         </nav>
                     </div>

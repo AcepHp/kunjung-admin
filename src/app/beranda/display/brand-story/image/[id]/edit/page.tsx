@@ -104,7 +104,7 @@ export default function EditBrandImagePage() {
                 description="Update the brand story image."
             />
 
-            <section className="rounded-2xl border border-[#E9D6C6] bg-white p-6 shadow-sm max-w-2xl">
+            <section className="rounded-2xl border border-[#E9D6C6] bg-white p-6 shadow-sm max-w-9xl">
                 <form onSubmit={handleSubmit} className="space-y-6">
                     {/* Image Upload */}
                     <div>
@@ -112,7 +112,7 @@ export default function EditBrandImagePage() {
                             Brand Image
                         </label>
                         <div className="flex flex-col gap-4">
-                            <div className="relative h-48 w-full overflow-hidden rounded-xl border border-dashed border-[#E0D4C6] bg-gray-50 flex items-center justify-center">
+                            <div className="relative h-[450px] w-1/2 mx-auto overflow-hidden rounded-xl border border-dashed border-[#E0D4C6] bg-gray-50 flex items-center justify-center">
                                 {previewUrl ? (
                                     <Image
                                         src={previewUrl}
