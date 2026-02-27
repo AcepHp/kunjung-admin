@@ -21,6 +21,7 @@ import {
     DocumentTextIcon,
     FolderIcon,
     HomeIcon,
+    MegaphoneIcon,
     SparklesIcon,
     UsersIcon,
     XMarkIcon,
@@ -65,6 +66,7 @@ const navigation: NavItem[] = [
         ],
     },
     { name: "Testimonial Management", href: "/beranda/testimonial", icon: ChatBubbleLeftRightIcon, current: false },
+    { name: "Smart Pop-Up Management", href: "/beranda/smart-popup", icon: MegaphoneIcon, current: false },
     { name: "TnC Policy Management", href: "/beranda/terms-refund", icon: DocumentTextIcon, current: false },
     { name: "Brand Ethos Management", href: "/beranda/brand-ethos", icon: SparklesIcon, current: false },
     {

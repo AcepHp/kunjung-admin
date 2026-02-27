@@ -2,7 +2,7 @@ import axios from "axios";
 import { getSession } from "next-auth/react";
 import { auth } from "./auth";
 
-const BASE_URL = 'https://api.kunjungfamily.site/api';
+const BASE_URL = 'https://api.kunjungfamily.com/api';
 
 const axiosInstance = axios.create({
   baseURL: BASE_URL,

@@ -78,7 +78,7 @@ export const updateBrandIdentity = async (payload: Pick<BrandEthosPayload, 'hero
 export const updateBrandIntroduction = async (payload: Pick<BrandEthosPayload, 'introLabel' | 'introMainTitle' | 'introSubtitle' | 'introDescription' | 'introPrincipleOne' | 'introPrincipleTwo' | 'introPrincipleThree'>): Promise<any> => {
     console.log('Updating Brand Introduction:', payload);
     // Explicitly using the full URL as requested to resolve 404 issues
-    const response = await axios.patch('https://api.kunjungfamily.site/api/ethos/brand-introduction', payload);
+    const response = await axios.patch('https://api.kunjungfamily.com/api/ethos/brand-introduction', payload);
     return response.data;
 };
 
